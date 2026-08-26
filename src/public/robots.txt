@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /*?checkIn=
+Disallow: /*?checkOut=
+
+# The production Node server appends the absolute sitemap URL dynamically.

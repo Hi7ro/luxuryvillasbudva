@@ -1,0 +1,235 @@
+/*
+  DESIGN SYSTEM — "Quiet Mediterranean Luxury"
+  ------------------------------------------------
+  Palette (named, 6 values):
+    --c-limestone   #F3EEE3  warm off-white, primary background
+    --c-adria       #17323F  deep Adriatic blue, dark sections + headings on light
+    --c-olive       #6E7455  sage/olive, secondary accent + links
+    --c-sand        #DCC9A3  sand, dividers/cards/borders
+    --c-terracotta  #B3654A  sparing accent, CTAs + active states only
+    --c-anthracite  #2A2A26  body copy
+    --c-champagne   #CDB98A  restrained highlight, used only for the horizon signature
+
+  Type: Fraunces (display serif, warm/editorial) for headings,
+        Inter (sans) for body/UI, self-hosted for GDPR compliance.
+        Font files are NOT bundled in this deliverable — see README
+        "Noch benötigte Angaben" for the download step before build.
+
+  Signature element: the "horizon divider" — a 1px line with a small
+  circular marker, referencing the panoramic sea horizon visible from
+  both villas at ~90m elevation. Used as the section separator instead
+  of a generic rule, and behind the hero headline on load.
+*/
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/assets/fonts/fraunces-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/assets/fonts/inter-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --c-limestone: #f3eee3;
+  --c-adria: #17323f;
+  --c-olive: #6e7455;
+  --c-sand: #dcc9a3;
+  --c-terracotta: #b3654a;
+  --c-anthracite: #2a2a26;
+  --c-champagne: #cdb98a;
+  --c-ivory: #fffdf8;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, Segoe UI, sans-serif;
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 7rem;
+
+  --max-width: 1320px;
+  --radius: 4px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 16px 50px rgba(23, 50, 63, 0.07);
+  --shadow-lifted: 0 28px 75px rgba(23, 50, 63, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id],
+#verfuegbarkeit {
+  scroll-margin-top: 7rem;
+}
+
+body {
+  margin: 0;
+  background: var(--c-limestone);
+  color: var(--c-anthracite);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+main, section, article, aside, app-booking-widget, app-availability-calendar {
+  min-width: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--c-adria);
+  line-height: 1.15;
+  margin: 0 0 var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(2.75rem, 6vw, 5.5rem); font-weight: 400; letter-spacing: -0.035em; }
+h2 { font-size: clamp(2rem, 3.8vw, 3.5rem); letter-spacing: -0.025em; }
+h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); }
+
+p { margin: 0 0 var(--space-2); max-width: 62ch; }
+
+a {
+  color: var(--c-olive);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--c-olive) 40%, transparent);
+}
+a:hover { color: var(--c-terracotta); }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--c-terracotta);
+  outline-offset: 3px;
+}
+
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+.section {
+  padding-block: clamp(5rem, 9vw, 9rem);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  color: var(--c-olive);
+}
+
+/* Signature element: horizon divider */
+.horizon-divider {
+  position: relative;
+  height: 1px;
+  background: color-mix(in srgb, var(--c-adria) 18%, transparent);
+  margin-block: var(--space-5);
+  width: 100%;
+}
+.horizon-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 12%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-champagne);
+  transform: translateY(-50%);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.7rem;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+  min-height: 44px;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary {
+  background: var(--c-terracotta);
+  color: var(--c-limestone);
+}
+.btn-primary:hover { background: color-mix(in srgb, var(--c-terracotta) 85%, black); color: var(--c-limestone); box-shadow: 0 12px 30px rgba(179, 101, 74, 0.24); }
+.btn-secondary {
+  background: transparent;
+  color: var(--c-limestone);
+  border-color: color-mix(in srgb, var(--c-limestone) 55%, transparent);
+}
+.btn-secondary:hover { background: color-mix(in srgb, var(--c-limestone) 12%, transparent); }
+.btn-quiet {
+  background: transparent;
+  color: var(--c-adria);
+  border-color: var(--c-sand);
+}
+.btn-quiet:hover { border-color: var(--c-olive); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--c-adria);
+  color: var(--c-limestone);
+  padding: 0.75rem 1.25rem;
+  z-index: 1000;
+}
+.skip-link:focus { left: var(--space-2); top: var(--space-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 640px) {
+  .section { padding-block: 4.5rem; }
+  h1 { font-size: clamp(2.4rem, 11.5vw, 3.4rem); overflow-wrap: anywhere; }
+  h2 { font-size: clamp(1.85rem, 9vw, 2.55rem); overflow-wrap: anywhere; }
+  .container { padding-inline: 1.1rem; }
+  .btn { width: 100%; justify-content: center; text-align: center; }
+  .horizon-divider { margin-block: 2.5rem; }
+}
