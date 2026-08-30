@@ -13,11 +13,17 @@ export interface AvailabilityResponse {
   complete: boolean;
 }
 
+interface ClientAvailabilityCacheEntry {
+  expiresAt: number;
+  request: Promise<AvailabilityResponse>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AvailabilityService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly cache = new Map<VillaSlug, Promise<AvailabilityResponse>>();
+  private readonly cache = new Map<VillaSlug, ClientAvailabilityCacheEntry>();
+  private readonly cacheDurationMs = 5 * 60 * 1000;
 
   getAvailability(villa: VillaSlug, refresh = false): Promise<AvailabilityResponse> {
     // Angular's development server does not execute the custom Express API from
@@ -37,15 +43,17 @@ export class AvailabilityService {
       });
     }
 
-    if (refresh || !this.cache.has(villa)) {
-      const request = firstValueFrom(
-        this.http.get<AvailabilityResponse>('/api/availability', { params: { villa } })
-      ).catch((error) => {
-        this.cache.delete(villa);
-        throw error;
-      });
-      this.cache.set(villa, request);
-    }
-    return this.cache.get(villa)!;
+    const cached = this.cache.get(villa);
+    if (!refresh && cached && cached.expiresAt > Date.now()) return cached.request;
+
+    let request!: Promise<AvailabilityResponse>;
+    request = firstValueFrom(
+      this.http.get<AvailabilityResponse>('/api/availability', { params: { villa } })
+    ).catch((error) => {
+      if (this.cache.get(villa)?.request === request) this.cache.delete(villa);
+      throw error;
+    });
+    this.cache.set(villa, { expiresAt: Date.now() + this.cacheDurationMs, request });
+    return request;
   }
 }

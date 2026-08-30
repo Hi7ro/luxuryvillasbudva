@@ -5,8 +5,8 @@ import { Locale, LocalizedText } from '../models/villa.model';
  * Lightweight runtime i18n for UI strings.
  *
  * Deliberately NOT using Angular's build-time @angular/localize pipeline:
- * with two languages and a small page count, a single runtime-switchable
- * build is far cheaper to operate than two separate localized builds/deploys.
+ * with four languages and a small page count, a single runtime-switchable
+ * build is far cheaper to operate than separate localized builds/deploys.
  * Route-level locale segments (/de/.. and /en/..) still give each language
  * its own indexable, canonical URL for hreflang purposes.
  */
@@ -103,7 +103,9 @@ export class TranslationService {
   }
 
   localizedPath(locale: Locale, path: string): string {
-    const stripped = path.replace(/^\/(de|en|ru|es)/, '');
+    const [pathAndQuery, fragment] = path.split('#', 2);
+    const [pathname, query] = pathAndQuery.split('?', 2);
+    const stripped = pathname.replace(/^\/(de|en|ru|es)/, '');
     const parts = stripped.split('/').filter(Boolean);
     const sections: Record<string, string> = {
       villen: locale === 'de' ? 'villen' : 'villas',
@@ -114,6 +116,7 @@ export class TranslationService {
       'location-budva-riviera': locale === 'de' ? 'lage-budva-riviera' : 'location-budva-riviera',
     };
     if (parts[0] && sections[parts[0]]) parts[0] = sections[parts[0]];
-    return `/${locale}${parts.length ? `/${parts.join('/')}` : ''}`;
+    const suffix = `${query ? `?${query}` : ''}${fragment ? `#${fragment}` : ''}`;
+    return `/${locale}${parts.length ? `/${parts.join('/')}` : ''}${suffix}`;
   }
 }
