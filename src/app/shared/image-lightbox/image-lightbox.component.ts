@@ -1,4 +1,5 @@
-import { Component, HostListener, Input, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, HostListener, Input, OnDestroy, PLATFORM_ID, ViewChild, inject, signal } from '@angular/core';
 import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
@@ -8,14 +9,14 @@ import { TranslationService } from '../../core/services/translation.service';
     @if (activeIndex() !== null) {
       <div class="backdrop" role="dialog" aria-modal="true" [attr.aria-label]="label"
            (click)="close()">
-        <div class="lightbox" (click)="$event.stopPropagation()">
-          <button class="control close" type="button" (click)="close()" [attr.aria-label]="t.inline('Schließen', 'Close', 'Закрыть', 'Cerrar')">×</button>
+        <div #lightboxPanel class="lightbox" (click)="$event.stopPropagation()">
+          <button #closeButton class="control close" type="button" (click)="close()" [attr.aria-label]="t.inline('Schließen', 'Close', 'Закрыть', 'Cerrar')">×</button>
           @if (images.length > 1) {
             <button class="control previous" type="button" (click)="previous()" [attr.aria-label]="t.inline('Vorheriges Bild', 'Previous image', 'Предыдущее изображение', 'Imagen anterior')">‹</button>
           }
           <figure>
             <img [src]="currentImage()" [alt]="currentAlt()" />
-            <figcaption>{{ activeIndex()! + 1 }} / {{ images.length }}</figcaption>
+            <figcaption aria-live="polite">{{ activeIndex()! + 1 }} / {{ images.length }}</figcaption>
           </figure>
           @if (images.length > 1) {
             <button class="control next" type="button" (click)="next()" [attr.aria-label]="t.inline('Nächstes Bild', 'Next image', 'Следующее изображение', 'Imagen siguiente')">›</button>
@@ -48,23 +49,38 @@ import { TranslationService } from '../../core/services/translation.service';
     }
   `],
 })
-export class ImageLightboxComponent {
+export class ImageLightboxComponent implements OnDestroy {
   protected readonly t = inject(TranslationService);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+  @ViewChild('lightboxPanel') private lightboxPanel?: ElementRef<HTMLElement>;
+  @ViewChild('closeButton') private closeButton?: ElementRef<HTMLButtonElement>;
   @Input({ required: true }) images: string[] = [];
   @Input() altText: (path: string) => string = () => '';
   @Input() label = 'Image gallery';
 
   protected readonly activeIndex = signal<number | null>(null);
+  private previouslyFocused: HTMLElement | null = null;
+  private previousBodyOverflow = '';
 
   open(index: number): void {
     if (!this.images[index]) return;
+    if (isPlatformBrowser(this.platformId) && this.activeIndex() === null) {
+      this.previouslyFocused = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null;
+      this.previousBodyOverflow = this.document.body.style.overflow;
+      this.document.body.style.overflow = 'hidden';
+    }
     this.activeIndex.set(index);
-    document.body.style.overflow = 'hidden';
+    if (isPlatformBrowser(this.platformId)) requestAnimationFrame(() => this.closeButton?.nativeElement.focus());
   }
 
   close(): void {
     this.activeIndex.set(null);
-    document.body.style.overflow = '';
+    this.restorePageState(true);
+  }
+
+  ngOnDestroy(): void {
+    this.restorePageState(false);
   }
 
   previous(): void {
@@ -90,8 +106,30 @@ export class ImageLightboxComponent {
   @HostListener('document:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
     if (this.activeIndex() === null) return;
-    if (event.key === 'Escape') this.close();
-    if (event.key === 'ArrowLeft') this.previous();
-    if (event.key === 'ArrowRight') this.next();
+    if (event.key === 'Escape') { event.preventDefault(); this.close(); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); this.previous(); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); this.next(); }
+    if (event.key === 'Tab') this.trapFocus(event);
+  }
+
+  private trapFocus(event: KeyboardEvent): void {
+    const focusable = Array.from(this.lightboxPanel?.nativeElement.querySelectorAll<HTMLElement>('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])') ?? []);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && this.document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && this.document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  private restorePageState(restoreFocus: boolean): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.document.body.style.overflow = this.previousBodyOverflow;
+    if (restoreFocus) this.previouslyFocused?.focus();
+    this.previouslyFocused = null;
   }
 }

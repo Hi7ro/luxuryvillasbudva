@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, compu
 import { TranslationService } from '../../core/services/translation.service';
 import { AvailabilityService } from '../../core/services/availability.service';
 import { VillaSlug } from '../../core/models/villa.model';
+import { nightlyRateForDate } from '../../core/config/pricing.config';
 
-interface CalendarDay { date: Date; iso: string; day: number; outside: boolean; past: boolean; blocked: boolean; }
+interface CalendarDay { date: Date; iso: string; day: number; rate: number; outside: boolean; past: boolean; blocked: boolean; }
 
 @Component({
   selector: 'app-availability-calendar',
@@ -46,7 +47,12 @@ interface CalendarDay { date: Date; iso: string; day: number; outside: boolean; 
                         (click)="select(cell.iso)"
                         [attr.aria-label]="cell.blocked ? blockedDayLabel(cell.date) : dayLabel(cell.date)"
                         [attr.aria-pressed]="cell.iso === start() || cell.iso === end()">
-                  {{ cell.day }}
+                  <span>{{ cell.day }}</span>
+                  @if (cell.blocked) {
+                    <small class="booked-label">{{ t.inline('Belegt', 'Booked', 'Занято', 'Ocupado') }}</small>
+                  } @else {
+                    <small>{{ cell.rate }} €</small>
+                  }
                 </button>
               }
             </div>
@@ -57,6 +63,7 @@ interface CalendarDay { date: Date; iso: string; day: number; outside: boolean; 
         <p class="hint">{{ t.inline('Anreise wählen, danach Abreise wählen.', 'Choose check-in, then check-out.', 'Сначала выберите заезд, затем выезд.', 'Elige la llegada y después la salida.') }}</p>
         <p class="legend"><span aria-hidden="true"></span>{{ t.inline('Belegt', 'Booked', 'Занято', 'Ocupado') }}</p>
       </div>
+      <p class="season-note">{{ t.inline('Preis pro Nacht · Nov.–Apr. 350 € · Mai & Okt. 400 € · Jun. & Sep. 450 € · Jul.–Aug. 500 €', 'Price per night · Nov–Apr €350 · May & Oct €400 · Jun & Sep €450 · Jul–Aug €500', 'Цена за ночь · нояб.–апр. 350 € · май и окт. 400 € · июнь и сент. 450 € · июль–авг. 500 €', 'Precio por noche · nov.–abr. 350 € · mayo y oct. 400 € · jun. y sept. 450 € · jul.–ago. 500 €') }}</p>
     </div>
   `,
   styles: [`
@@ -74,19 +81,23 @@ interface CalendarDay { date: Date; iso: string; day: number; outside: boolean; 
     .month h3 { text-align: center; color: var(--c-adria); font-size: 1rem; margin-bottom: .75rem; }
     .weekdays, .days { display: grid; grid-template-columns: repeat(7, 1fr); }
     .weekdays span { text-align: center; color: var(--c-olive); font-size: .72rem; padding-bottom: .45rem; }
-    .days button { position: relative; border: 0; background: transparent; color: var(--c-anthracite); aspect-ratio: 1; min-width: 0; border-radius: 50%; cursor: pointer; font: inherit; font-size: .86rem; z-index: 1; }
+    .days button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .05rem; border: 0; background: transparent; color: var(--c-anthracite); aspect-ratio: 1; min-width: 0; border-radius: 50%; cursor: pointer; font: inherit; font-size: .86rem; line-height: 1.1; z-index: 1; }
+    .days button small { color: var(--c-olive); font-size: clamp(.5rem, 1.3vw, .62rem); white-space: nowrap; }
     .days button:hover:not(:disabled) { outline: 1px solid var(--c-adria); }
     .days button:disabled { color: color-mix(in srgb, var(--c-anthracite) 28%, transparent); cursor: default; text-decoration: line-through; }
-    .days button.blocked { color: color-mix(in srgb, var(--c-anthracite) 48%, transparent); background: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--c-terracotta) 18%, transparent) 4px 6px); text-decoration: line-through; }
+    .days button.blocked { color: color-mix(in srgb, var(--c-anthracite) 56%, transparent); background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c-terracotta) 8%, white) 0 5px, color-mix(in srgb, var(--c-terracotta) 25%, white) 5px 7px); outline: 1px solid color-mix(in srgb, var(--c-terracotta) 28%, transparent); text-decoration: line-through; }
+    .days button.blocked .booked-label { color: var(--c-terracotta); font-size: clamp(.42rem, 1vw, .54rem); font-weight: 700; letter-spacing: .02em; line-height: 1; text-decoration: none; }
     .days button.outside { visibility: hidden; }
     .days button.in-range { border-radius: 0; background: color-mix(in srgb, var(--c-terracotta) 14%, white); }
     .days button.start, .days button.end { border-radius: 50%; background: var(--c-adria); color: #fff; text-decoration: none; }
+    .days button.start small, .days button.end small { color: rgba(255,255,255,.82); }
     .calendar-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1rem; }
     .hint, .legend, .sync-status { margin: 0; color: var(--c-olive); font-size: .8rem; }
     .legend { display: flex; align-items: center; gap: .4rem; white-space: nowrap; }
     .legend span { width: 1rem; height: 1rem; border-radius: 50%; background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--c-terracotta) 28%, transparent) 3px 5px); border: 1px solid var(--c-sand); }
     .sync-status { padding: .6rem .75rem; margin-bottom: .8rem; border-radius: 7px; background: var(--c-limestone); }
     .sync-error { color: var(--c-terracotta); }
+    .season-note { max-width: none; margin: .8rem 0 0; padding-top: .8rem; border-top: 1px solid color-mix(in srgb, var(--c-sand) 55%, transparent); color: var(--c-olive); font-size: .7rem; line-height: 1.45; }
     @media (max-width: 720px) {
       .calendar-head { align-items: flex-start; }
       .calendar-head > div:first-child { min-width: 0; }
@@ -116,6 +127,7 @@ export class AvailabilityCalendarComponent implements OnChanges {
   protected readonly loadError = signal(false);
   private readonly today = this.startOfDay(new Date());
   private readonly firstVisibleMonth = signal(new Date(this.today.getFullYear(), this.today.getMonth(), 1));
+  private availabilityRequestId = 0;
 
   protected readonly visibleMonths = computed(() => [0].map((offset) => {
     const base = this.firstVisibleMonth();
@@ -186,7 +198,7 @@ export class AvailabilityCalendarComponent implements OnChanges {
     return Array.from({ length: 42 }, (_, i) => {
       const date = new Date(first.getFullYear(), first.getMonth(), first.getDate() + i);
       const iso = this.toIso(date);
-      return { date, iso, day: date.getDate(), outside: date.getMonth() !== month.getMonth(), past: date < this.today, blocked: this.blockedDates().has(iso) };
+      return { date, iso, day: date.getDate(), rate: nightlyRateForDate(iso), outside: date.getMonth() !== month.getMonth(), past: date < this.today, blocked: this.blockedDates().has(iso) };
     });
   }
   private shiftMonth(offset: number): void {
@@ -199,6 +211,7 @@ export class AvailabilityCalendarComponent implements OnChanges {
   private startOfDay(date: Date): Date { return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
 
   private async loadAvailability(resetSelection = false): Promise<void> {
+    const requestId = ++this.availabilityRequestId;
     this.loading.set(true);
     this.loadError.set(false);
     if (resetSelection) {
@@ -210,14 +223,16 @@ export class AvailabilityCalendarComponent implements OnChanges {
       this.end.set(this.initialCheckOut);
     }
     try {
-      const response = await this.availability.getAvailability(this.villaSlug, true);
+      const response = await this.availability.getAvailability(this.villaSlug);
+      if (requestId !== this.availabilityRequestId) return;
       this.blockedDates.set(new Set(response.blockedDates));
       this.loadError.set(!response.complete);
     } catch {
+      if (requestId !== this.availabilityRequestId) return;
       this.blockedDates.set(new Set());
       this.loadError.set(true);
     } finally {
-      this.loading.set(false);
+      if (requestId === this.availabilityRequestId) this.loading.set(false);
     }
   }
 

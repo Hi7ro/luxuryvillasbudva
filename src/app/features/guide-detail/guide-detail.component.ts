@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
 import { StructuredDataService } from '../../core/services/structured-data.service';
@@ -39,7 +38,7 @@ import { GuideArticle, Locale } from '../../core/models/villa.model';
               <li><a [routerLink]="villaPath(v.slug)">{{ v.name }}</a></li>
             }
           </ul>
-          <a class="btn btn-primary" href="#" [routerLink]="['/' + locale()]" fragment="verfuegbarkeit">
+          <a class="btn btn-primary" [routerLink]="['/' + locale()]" fragment="verfuegbarkeit">
             {{ t.ui('ctaCheckAvailability') }}
           </a>
         </aside>
@@ -60,7 +59,6 @@ export class GuideDetailComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly structuredData = inject(StructuredDataService);
   private readonly route = inject(ActivatedRoute);
-  private readonly sanitizer = inject(DomSanitizer);
 
   protected guide: GuideArticle | undefined;
 
@@ -112,9 +110,9 @@ export class GuideDetailComponent implements OnInit {
     return this.t.locale();
   }
 
-  protected body(): SafeHtml {
+  protected body(): string {
     if (!this.guide) return '';
-    return this.sanitizer.bypassSecurityTrustHtml(this.t.t(this.guide.bodyHtml));
+    return this.t.t(this.guide.bodyHtml);
   }
 
   protected relatedVillas() {

@@ -1,5 +1,6 @@
-import { Component, HostBinding, HostListener, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { TranslationService } from '../../core/services/translation.service';
 import { Locale } from '../../core/models/villa.model';
@@ -14,8 +15,8 @@ import { Locale } from '../../core/models/villa.model';
         <a class="wordmark" [routerLink]="['/' + locale()]">MonteMare <span>&amp;</span> Lumina</a>
 
         <button class="nav-toggle" type="button" (click)="mobileOpen.set(!mobileOpen())"
-                [attr.aria-expanded]="mobileOpen()" aria-controls="primary-nav">
-          <span class="visually-hidden">{{ t.inline('Menü', 'Menu', 'Меню', 'Menú') }}</span>
+                [attr.aria-expanded]="mobileOpen()" aria-controls="primary-nav"
+                [attr.aria-label]="mobileOpen() ? t.inline('Menü schließen', 'Close menu', 'Закрыть меню', 'Cerrar menú') : t.inline('Menü öffnen', 'Open menu', 'Открыть меню', 'Abrir menú')">
           <span aria-hidden="true">{{ mobileOpen() ? '✕' : '☰' }}</span>
         </button>
 
@@ -143,6 +144,7 @@ import { Locale } from '../../core/models/villa.model';
 export class HeaderComponent {
   protected readonly t = inject(TranslationService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly locale = this.t.locale;
   protected readonly mobileOpen = signal(false);
@@ -150,7 +152,10 @@ export class HeaderComponent {
 
   constructor() {
     this.updateLocaleFromUrl(this.router.url);
-    this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe((e) => {
       this.updateLocaleFromUrl(e.urlAfterRedirects);
       this.mobileOpen.set(false);
     });
@@ -159,6 +164,11 @@ export class HeaderComponent {
   @HostListener('window:scroll')
   onScroll(): void {
     this.scrolled.set((typeof window !== 'undefined' ? window.scrollY : 0) > 8);
+  }
+
+  @HostListener('document:keydown.escape')
+  closeMenu(): void {
+    this.mobileOpen.set(false);
   }
 
   private updateLocaleFromUrl(url: string): void {
@@ -181,14 +191,20 @@ export class HeaderComponent {
     event.preventDefault();
     this.mobileOpen.set(false);
     void this.router.navigate(['/' + this.locale()], { fragment }).then(() => {
-      if (typeof document === 'undefined') return;
-      window.requestAnimationFrame(() => {
-        const target = document.getElementById(fragment);
-        if (!target) return;
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      });
+      this.scrollToSection(fragment);
     });
+  }
+
+  private scrollToSection(fragment: string): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      const target = document.getElementById(fragment);
+      if (!target) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }));
   }
 
   locationPath(): string[] {

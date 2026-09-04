@@ -1,14 +1,18 @@
-import { Component, HostListener, Input, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, PLATFORM_ID, ViewChild, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { TranslationService } from '../../core/services/translation.service';
 import { VillaSlug } from '../../core/models/villa.model';
 import { AvailabilityCalendarComponent } from '../availability-calendar/availability-calendar.component';
 import { ConversionTrackingService } from '../../core/services/conversion-tracking.service';
+import { CONTACT } from '../../core/config/contact.config';
+import { LONG_STAY_MIN_NIGHTS, MONTE_MARE_MONTHLY_RATE_EUR, nightlyRateForDate } from '../../core/config/pricing.config';
 
 type SubmitState = 'idle' | 'success' | 'error';
 type DrawerStep = 1 | 2 | 3;
 type TravelReason = 'family' | 'celebration' | 'friends' | 'workation' | 'party' | 'curious';
 type ContactPreference = 'email' | 'whatsapp';
+interface PriceLine { rate: number; nights: number; total: number; }
 
 @Component({
   selector: 'app-booking-widget',
@@ -27,8 +31,8 @@ type ContactPreference = 'email' | 'whatsapp';
         <div class="calendar-panel">
           <label for="stayVilla">{{ t.ui('formVilla') }}</label>
           <select id="stayVilla" [formControl]="form.controls.villaSlug" (change)="villaChanged()">
-            <option value="villa-monte-mare">Villa MonteMare</option>
             <option value="villa-lumina">Villa Lumina</option>
+            <option value="villa-monte-mare">Villa MonteMare</option>
           </select>
           <app-availability-calendar [villaSlug]="form.controls.villaSlug.value" [initialCheckIn]="form.controls.checkIn.value" [initialCheckOut]="form.controls.checkOut.value" [embedded]="true" (rangeChange)="setDateRange($event)" />
         </div>
@@ -43,10 +47,28 @@ type ContactPreference = 'email' | 'whatsapp';
               <li>{{ t.inline('Endreinigung', 'Final cleaning', 'Финальная уборка', 'Limpieza final') }}</li>
               <li>{{ t.inline('Strom und Wasser', 'Electricity and water', 'Электричество и вода', 'Electricidad y agua') }}</li>
               <li>{{ t.inline('Hochgeschwindigkeits-WLAN', 'High-speed WiFi', 'Высокоскоростной Wi‑Fi', 'Wi‑Fi de alta velocidad') }}</li>
-              <li>{{ t.inline('Reinigung auf Wunsch – auch täglich', 'Cleaning on request – including daily', 'Уборка по запросу — в том числе ежедневно', 'Limpieza bajo petición, incluso diaria') }}</li>
-              <li>{{ t.inline('Zwei private Parkplätze', 'Two private parking spaces', 'Два частных парковочных места', 'Dos plazas de aparcamiento privadas') }}</li>
+              <li>{{ t.inline('2 private Parkplätze pro Villa', '2 private parking spaces per villa', '2 частных парковочных места для каждой виллы', '2 plazas de aparcamiento privadas por villa') }}</li>
               <li>{{ t.inline('Exklusive Nutzung der gesamten Villa', 'Exclusive use of the entire villa', 'Эксклюзивное пользование всей виллой', 'Uso exclusivo de toda la villa') }}</li>
             </ul>
+            <section class="long-stay-extras" [attr.aria-label]="t.inline('Langzeitmiete Villa MonteMare', 'Villa MonteMare long stays', 'Длительное проживание в Villa MonteMare', 'Estancias largas en Villa MonteMare')">
+                <div class="long-stay-title">
+                  <span aria-hidden="true">✦</span>
+                  <div>
+                    <small>{{ t.inline('Exklusiv für Villa MonteMare', 'Exclusive to Villa MonteMare', 'Эксклюзивно для Villa MonteMare', 'Exclusivo para Villa MonteMare') }}</small>
+                    <h4>{{ t.inline('Extras bei Langzeitmiete', 'Long-stay extras', 'Дополнительные услуги при длительном проживании', 'Extras para estancias largas') }}</h4>
+                  </div>
+                </div>
+                <div class="long-stay-rate">
+                  <strong>2.500 €</strong>
+                  <span>{{ t.inline('pro Monat', 'per month', 'в месяц', 'al mes') }}</span>
+                </div>
+                <ul>
+                  <li>{{ t.inline('Poolreinigungsservice', 'Pool cleaning service', 'Обслуживание и очистка бассейна', 'Servicio de limpieza de piscina') }}</li>
+                  <li>{{ t.inline('Täglicher Reinigungsservice', 'Daily housekeeping', 'Ежедневная уборка', 'Servicio de limpieza diario') }}</li>
+                  <li>{{ t.inline('Gärtnerservice', 'Garden maintenance', 'Уход за садом', 'Servicio de jardinería') }}</li>
+                </ul>
+                <p>{{ t.inline('Für längere Aufenthalte auf Anfrage individuell planbar.', 'Individually arranged on request for longer stays.', 'Для длительного проживания услуги согласовываются индивидуально по запросу.', 'Disponibles bajo petición y organizados a medida para estancias largas.') }}</p>
+            </section>
             <div class="included-footer">
               <p>{{ t.inline('Fragen vor der Datumswahl?', 'Questions before choosing dates?', 'Есть вопросы перед выбором дат?', '¿Preguntas antes de elegir fechas?') }}</p>
               <button class="btn btn-quiet" type="button" (click)="openInquiry()">{{ t.inline('Schreiben Sie uns', 'Write to us', 'Напишите нам', 'Escríbenos') }} →</button>
@@ -61,7 +83,14 @@ type ContactPreference = 'email' | 'whatsapp';
               <span><small>{{ t.ui('formCheckOut') }}</small><strong>{{ formatDate(form.controls.checkOut.value) }}</strong></span>
             </div>
             <div class="price-row"><span>{{ nightCount() }} {{ t.inline('Nächte', 'nights', 'ночей', 'noches') }}</span></div>
-            <div class="price-row"><span>500 € × {{ nightCount() }}</span><strong>{{ estimatedTotal() }} €</strong></div>
+            @if (usesLongStayRate()) {
+              <div class="price-row"><span>{{ t.inline('MonteMare-Langzeitpreis', 'MonteMare long-stay rate', 'Долгосрочный тариф MonteMare', 'Tarifa de larga estancia MonteMare') }}</span><strong>2.500 € / {{ t.inline('Monat', 'month', 'месяц', 'mes') }}</strong></div>
+              <p class="long-stay-calculation">{{ t.inline('Anteilig auf 30-Tage-Basis berechnet.', 'Calculated pro rata on a 30-day basis.', 'Рассчитано пропорционально на основе 30 дней.', 'Calculado proporcionalmente sobre una base de 30 días.') }}</p>
+            } @else {
+              @for (line of priceLines(); track line.rate) {
+                <div class="price-row"><span>{{ line.rate }} € × {{ line.nights }} {{ t.inline(line.nights === 1 ? 'Nacht' : 'Nächte', line.nights === 1 ? 'night' : 'nights', 'ноч.', line.nights === 1 ? 'noche' : 'noches') }}</span><strong>{{ line.total }} €</strong></div>
+              }
+            }
             <div class="price-total"><span>{{ t.inline('Gesamt', 'Total', 'Итого', 'Total') }}</span><strong>{{ estimatedTotal() }} €</strong></div>
             <p class="price-note">{{ t.inline('Vorläufiger Preis. Die Verfügbarkeit und der endgültige Gesamtpreis werden persönlich bestätigt.', 'Estimated price. Availability and the final total will be confirmed personally.', 'Предварительная цена. Наличие и окончательная сумма будут подтверждены лично.', 'Precio estimado. La disponibilidad y el total final se confirmarán personalmente.') }}</p>
             <button class="btn price-cta" type="button" (click)="openInquiry()">{{ t.inline('Für diesen Zeitraum anfragen', 'Request these dates', 'Запросить эти даты', 'Solicitar estas fechas') }}</button>
@@ -74,10 +103,10 @@ type ContactPreference = 'email' | 'whatsapp';
 
     @if (drawerOpen()) {
       <button class="drawer-backdrop" type="button" (click)="closeInquiry()" [attr.aria-label]="t.inline('Anfrage schließen', 'Close inquiry', 'Закрыть запрос', 'Cerrar solicitud')"></button>
-      <aside class="inquiry-drawer" role="dialog" aria-modal="true" [attr.aria-label]="t.inline('Ihre Anfrage', 'Your inquiry', 'Ваш запрос', 'Tu solicitud')">
-        <button class="drawer-close" type="button" (click)="closeInquiry()" [attr.aria-label]="t.inline('Schließen', 'Close', 'Закрыть', 'Cerrar')">×</button>
+      <aside #drawerPanel class="inquiry-drawer" role="dialog" aria-modal="true" aria-labelledby="inquiry-title">
+        <button #drawerCloseButton class="drawer-close" type="button" (click)="closeInquiry()" [attr.aria-label]="t.inline('Schließen', 'Close', 'Закрыть', 'Cerrar')">×</button>
         <p class="eyebrow">{{ t.inline('Ihre Anfrage', 'Your inquiry', 'Ваш запрос', 'Tu solicitud') }}</p>
-        <h2>{{ villaName() }}</h2>
+        <h2 id="inquiry-title">{{ villaName() }}</h2>
         <div class="drawer-progress" aria-hidden="true">
           <span class="active"></span><span [class.active]="drawerStep() >= 2"></span><span [class.active]="drawerStep() >= 3"></span>
         </div>
@@ -94,8 +123,8 @@ type ContactPreference = 'email' | 'whatsapp';
           <div class="field drawer-villa">
             <label for="drawerVilla">{{ t.ui('formVilla') }}</label>
             <select id="drawerVilla" [formControl]="form.controls.villaSlug" (change)="villaChanged()">
-              <option value="villa-monte-mare">Villa MonteMare</option>
               <option value="villa-lumina">Villa Lumina</option>
+              <option value="villa-monte-mare">Villa MonteMare</option>
             </select>
           </div>
           <label class="flexible-choice">
@@ -187,6 +216,18 @@ type ContactPreference = 'email' | 'whatsapp';
     .included-list { columns: 2; column-gap: 2rem; list-style: none; padding: 0; margin: 1.5rem 0 2rem; }
     .included-list li { break-inside: avoid; position: relative; padding: 0 0 .9rem 1.15rem; color: color-mix(in srgb, var(--c-anthracite) 78%, transparent); }
     .included-list li::before { content: '·'; position: absolute; left: 0; color: var(--c-terracotta); font-weight: 700; }
+    .long-stay-extras { margin: 0 0 2rem; padding: 1.25rem; border: 1px solid color-mix(in srgb, var(--c-champagne) 70%, transparent); border-radius: 9px; background: linear-gradient(145deg, color-mix(in srgb, var(--c-champagne) 13%, white), color-mix(in srgb, var(--c-limestone) 78%, white)); }
+    .long-stay-title { display: flex; gap: .85rem; align-items: center; }
+    .long-stay-title > span { display: grid; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; border: 1px solid var(--c-champagne); border-radius: 50%; color: var(--c-terracotta); }
+    .long-stay-title small { display: block; color: var(--c-olive); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
+    .long-stay-title h4 { margin: .15rem 0 0; color: var(--c-adria); font-family: var(--font-display); font-size: 1.1rem; }
+    .long-stay-rate { display: flex; align-items: baseline; gap: .45rem; margin: 1rem 0 .7rem; }
+    .long-stay-rate strong { color: var(--c-adria); font-family: var(--font-display); font-size: 1.65rem; font-weight: 500; line-height: 1; }
+    .long-stay-rate span { color: var(--c-olive); font-size: .78rem; }
+    .long-stay-extras ul { display: grid; gap: .45rem; margin: 1rem 0; padding: 0; list-style: none; }
+    .long-stay-extras li { position: relative; padding-left: 1rem; color: color-mix(in srgb, var(--c-anthracite) 82%, transparent); font-size: .88rem; }
+    .long-stay-extras li::before { content: '–'; position: absolute; left: 0; color: var(--c-terracotta); }
+    .long-stay-extras p { margin: 0; color: var(--c-olive); font-size: .78rem; }
     .included-footer { border-top: 1px solid var(--c-sand); margin-top: auto; padding-top: 1.5rem; }
     .included-footer .btn { width: 100%; justify-content: center; }
     .whatsapp-text { display: block; text-align: center; margin-top: 1rem; font-size: .82rem; }
@@ -200,6 +241,7 @@ type ContactPreference = 'email' | 'whatsapp';
     .price-row strong, .price-total strong { color: white; }
     .price-total { font-size: 1.2rem; font-weight: 600; }
     .price-note { margin-top: 1rem; color: rgba(255,255,255,.55); font-size: .8rem; }
+    .long-stay-calculation { margin: -.35rem 0 .5rem; color: rgba(255,255,255,.5); font-size: .74rem; }
     .price-cta { width: 100%; justify-content: center; margin-top: auto; background: #24758a; color: white; }
     .price-whatsapp { width: 100%; justify-content: center; margin-top: .75rem; border-color: rgba(255,255,255,.25); color: white; }
     .change-dates { align-self: center; border: 0; background: transparent; color: rgba(255,255,255,.48); margin-top: 1rem; cursor: pointer; }
@@ -270,20 +312,26 @@ type ContactPreference = 'email' | 'whatsapp';
     }
   `],
 })
-export class BookingWidgetComponent implements OnInit {
-  @Input() preselectedVillaSlug: VillaSlug = 'villa-monte-mare';
+export class BookingWidgetComponent implements OnInit, OnDestroy {
+  @Input() preselectedVillaSlug: VillaSlug = 'villa-lumina';
   @ViewChild(AvailabilityCalendarComponent) private calendar?: AvailabilityCalendarComponent;
+  @ViewChild('drawerPanel') private drawerPanel?: ElementRef<HTMLElement>;
+  @ViewChild('drawerCloseButton') private drawerCloseButton?: ElementRef<HTMLButtonElement>;
 
   protected readonly t = inject(TranslationService);
   private readonly fb = inject(FormBuilder);
   private readonly tracking = inject(ConversionTrackingService);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
   protected readonly state = signal<SubmitState>('idle');
   protected readonly errorMessage = signal('');
   protected readonly drawerOpen = signal(false);
   protected readonly drawerStep = signal<DrawerStep>(1);
+  private previouslyFocused: HTMLElement | null = null;
+  private previousBodyOverflow = '';
 
   protected readonly form = this.fb.nonNullable.group({
-    villaSlug: this.fb.nonNullable.control<VillaSlug>('villa-monte-mare', Validators.required),
+    villaSlug: this.fb.nonNullable.control<VillaSlug>('villa-lumina', Validators.required),
     checkIn: [''], checkOut: [''], flexibleDates: [false],
     guests: [2, [Validators.required, Validators.min(1), Validators.max(6)]],
     travelReason: this.fb.nonNullable.control<TravelReason | ''>('', Validators.required),
@@ -297,8 +345,14 @@ export class BookingWidgetComponent implements OnInit {
 
   ngOnInit(): void { this.form.patchValue({ villaSlug: this.preselectedVillaSlug }); }
 
-  @HostListener('document:keydown.escape')
-  protected closeOnEscape(): void { if (this.drawerOpen()) this.closeInquiry(); }
+  ngOnDestroy(): void { this.restorePageState(false); }
+
+  @HostListener('document:keydown', ['$event'])
+  protected handleDrawerKeydown(event: KeyboardEvent): void {
+    if (!this.drawerOpen()) return;
+    if (event.key === 'Escape') { event.preventDefault(); this.closeInquiry(); }
+    if (event.key === 'Tab') this.trapDrawerFocus(event);
+  }
 
   protected nightCount(): number {
     const checkIn = this.form.controls.checkIn.value;
@@ -306,7 +360,31 @@ export class BookingWidgetComponent implements OnInit {
     if (!checkIn || !checkOut) return 0;
     return Math.max(0, Math.round((new Date(`${checkOut}T12:00:00`).getTime() - new Date(`${checkIn}T12:00:00`).getTime()) / 86_400_000));
   }
-  protected estimatedTotal(): number { return this.nightCount() * 500; }
+  protected priceLines(): PriceLine[] {
+    const checkIn = this.form.controls.checkIn.value;
+    const checkOut = this.form.controls.checkOut.value;
+    if (!checkIn || !checkOut) return [];
+    const lines = new Map<number, PriceLine>();
+    const date = new Date(`${checkIn}T12:00:00`);
+    const last = new Date(`${checkOut}T12:00:00`);
+    while (date < last) {
+      const iso = this.toIso(date);
+      const rate = nightlyRateForDate(iso);
+      const line = lines.get(rate) ?? { rate, nights: 0, total: 0 };
+      line.nights += 1;
+      line.total += rate;
+      lines.set(rate, line);
+      date.setDate(date.getDate() + 1);
+    }
+    return [...lines.values()];
+  }
+  protected usesLongStayRate(): boolean {
+    return this.form.controls.villaSlug.value === 'villa-monte-mare' && this.nightCount() >= LONG_STAY_MIN_NIGHTS;
+  }
+  protected estimatedTotal(): number {
+    if (this.usesLongStayRate()) return Math.round((this.nightCount() / 30) * MONTE_MARE_MONTHLY_RATE_EUR);
+    return this.priceLines().reduce((total, line) => total + line.total, 0);
+  }
   protected villaName(): string { return this.form.controls.villaSlug.value === 'villa-lumina' ? 'Villa Lumina' : 'Villa MonteMare'; }
   protected formatDate(iso: string): string {
     if (!iso) return '—';
@@ -323,10 +401,16 @@ export class BookingWidgetComponent implements OnInit {
     this.state.set('idle');
   }
   protected openInquiry(): void {
+    if (isPlatformBrowser(this.platformId) && !this.drawerOpen()) {
+      this.previouslyFocused = this.document.activeElement instanceof HTMLElement ? this.document.activeElement : null;
+      this.previousBodyOverflow = this.document.body.style.overflow;
+      this.document.body.style.overflow = 'hidden';
+    }
     this.drawerStep.set(1); this.state.set('idle'); this.errorMessage.set(''); this.drawerOpen.set(true);
+    if (isPlatformBrowser(this.platformId)) requestAnimationFrame(() => this.drawerCloseButton?.nativeElement.focus());
     this.tracking.track('booking_inquiry_opened', { villa: this.form.controls.villaSlug.value, nights: this.nightCount() });
   }
-  protected closeInquiry(): void { this.drawerOpen.set(false); }
+  protected closeInquiry(): void { this.drawerOpen.set(false); this.restorePageState(true); }
   protected changeGuests(change: number): void { this.form.controls.guests.setValue(Math.min(6, Math.max(1, this.form.controls.guests.value + change))); }
   protected goToStep(step: DrawerStep): void { this.state.set('idle'); this.errorMessage.set(''); this.drawerStep.set(step); }
   protected selectReason(reason: TravelReason): void { this.form.controls.travelReason.setValue(reason); this.state.set('idle'); }
@@ -370,11 +454,11 @@ export class BookingWidgetComponent implements OnInit {
 
     const body = this.inquiryMessage();
     if (raw.contactPreference === 'whatsapp') {
-      window.open(`https://wa.me/436642660438?text=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
+      window.open(`https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
       this.trackWhatsapp();
     } else {
       const subject = this.t.inline(`Anfrage ${this.villaName()}`, `Inquiry ${this.villaName()}`, `Запрос ${this.villaName()}`, `Solicitud ${this.villaName()}`);
-      window.location.href = `mailto:michael.c.neumann@protonmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
     this.state.set('success');
     this.tracking.track('booking_inquiry_submitted', { villa: raw.villaSlug, nights: this.nightCount(), guests: raw.guests, channel: raw.contactPreference, reason: raw.travelReason });
@@ -406,10 +490,35 @@ export class BookingWidgetComponent implements OnInit {
       `Здравствуйте, меня интересует ${this.villaName()} (${dates}, гостей: ${raw.guests || '?'}).`,
       `Hola, me interesa ${this.villaName()} (${dates}, ${raw.guests || '?'} huéspedes).`,
     ));
-    return `https://wa.me/436642660438?text=${text}`;
+    return `https://wa.me/${CONTACT.whatsappNumber}?text=${text}`;
   }
 
   protected trackWhatsapp(): void {
     this.tracking.track('booking_whatsapp_clicked', { villa: this.form.controls.villaSlug.value, nights: this.nightCount() });
+  }
+
+  private toIso(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  private trapDrawerFocus(event: KeyboardEvent): void {
+    const focusable = Array.from(this.drawerPanel?.nativeElement.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? []);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && this.document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && this.document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  private restorePageState(restoreFocus: boolean): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.document.body.style.overflow = this.previousBodyOverflow;
+    if (restoreFocus) this.previouslyFocused?.focus();
+    this.previouslyFocused = null;
   }
 }

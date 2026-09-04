@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
 import { StructuredDataService } from '../../core/services/structured-data.service';
@@ -35,7 +35,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
               <span><strong>{{ villa.nightlyRateEur }} €</strong> {{ t.inline('/ Nacht', '/ night', '/ ночь', '/ noche') }}</span>
             </div>
             <div class="hero-actions">
-              <a class="btn btn-primary" [routerLink]="[]" fragment="verfuegbarkeit">{{ t.ui('ctaCheckAvailability') }}</a>
+              <a class="btn btn-primary" [routerLink]="[]" fragment="verfuegbarkeit" (click)="navigateToBooking($event)">{{ t.ui('ctaCheckAvailability') }}</a>
               <a class="btn btn-secondary" [routerLink]="[]" fragment="villa-ueberblick">{{ t.inline('Villa entdecken', 'Discover the villa', 'Открыть виллу', 'Descubrir la villa') }}</a>
             </div>
           </div>
@@ -48,7 +48,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
           <a [routerLink]="[]" fragment="villa-galerie">{{ t.inline('Galerie', 'Gallery', 'Галерея', 'Galería') }}</a>
           <a [routerLink]="[]" fragment="villa-ausstattung">{{ t.inline('Ausstattung', 'Amenities', 'Удобства', 'Comodidades') }}</a>
           <a [routerLink]="[]" fragment="villa-lage">{{ t.inline('Lage', 'Location', 'Расположение', 'Ubicación') }}</a>
-          <a class="section-nav-book" [routerLink]="[]" fragment="verfuegbarkeit">{{ t.inline('Aufenthalt planen', 'Plan your stay', 'Спланировать отдых', 'Planificar estancia') }}</a>
+          <a class="section-nav-book" [routerLink]="[]" fragment="verfuegbarkeit" (click)="navigateToBooking($event)">{{ t.inline('Aufenthalt planen', 'Plan your stay', 'Спланировать отдых', 'Planificar estancia') }}</a>
         </div>
       </nav>
 
@@ -74,6 +74,31 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
           <div><strong>{{ villa.bedrooms }}</strong><span>{{ t.inline('Schlafzimmer', 'Bedrooms', 'Спальни', 'Dormitorios') }}</span></div>
           <div><strong>{{ villa.bathrooms }}</strong><span>{{ t.inline('Badezimmer', 'Bathrooms', 'Ванные', 'Baños') }}</span></div>
           <div><strong>{{ villa.nightlyRateEur }} €</strong><span>{{ t.inline('ab / Nacht', 'from / night', 'от / ночь', 'desde / noche') }}</span></div>
+        </div>
+      </section>
+
+      <section class="villa-details section">
+        <div class="container">
+          <header class="villa-details-heading">
+            <div>
+              <p class="eyebrow">{{ t.inline('Ankommen · Aufatmen · Bleiben', 'Arrive · Unwind · Stay', 'Приехать · Выдохнуть · Остаться', 'Llegar · Respirar · Quedarse') }}</p>
+              <h2>{{ t.inline('Ihr Aufenthalt im Detail', 'Your stay in detail', 'Подробно о вашем отдыхе', 'Tu estancia al detalle') }}</h2>
+            </div>
+            <p>{{ t.inline('Alles, was Sie über Räume, Terrassen, Garten und Pool wissen möchten.', 'Everything you need to know about the interiors, terraces, garden and pool.', 'Всё, что важно знать о помещениях, террасах, саде и бассейне.', 'Todo lo que necesitas saber sobre los interiores, terrazas, jardín y piscina.') }}</p>
+          </header>
+          <div class="villa-detail-stories">
+            @for (section of villa.detailSections; track section.title.de) {
+              <article class="villa-detail-story" [class.featured]="$first">
+                <span class="detail-index" aria-hidden="true">{{ ($index + 1).toString().padStart(2, '0') }}</span>
+                <div>
+                  <h3>{{ t.t(section.title) }}</h3>
+                  @for (paragraph of section.paragraphs; track $index) {
+                    <p>{{ t.t(paragraph) }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
         </div>
       </section>
 
@@ -174,7 +199,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
           <p>{{ t.inline('Smokov vijenac, Drobnići, Gemeinde Budva – ruhig gelegen und zugleich nah an den besonderen Orten der montenegrinischen Küste.', 'Smokov vijenac, Drobnići, Budva Municipality – peacefully located yet close to the defining places of Montenegro’s coast.', 'Smokov vijenac, Дробничи, муниципалитет Будва — тихое место рядом с главными достопримечательностями побережья Черногории.', 'Smokov vijenac, Drobnići, municipio de Budva: tranquilidad cerca de los lugares más especiales de la costa montenegrina.') }}</p>
           <ul class="distances">
             @for (d of distances; track d.label.de) {
-              <li><span>{{ t.t(d.label) }}</span><strong>{{ d.value }}</strong></li>
+              <li><span>{{ t.t(d.label) }}</span><strong>{{ t.t(d.value) }}</strong></li>
             }
           </ul>
           <a class="btn btn-quiet" [routerLink]="locationPath()">
@@ -212,12 +237,18 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
       </section>
       </div>
 
-      <a class="mobile-sticky-cta btn btn-primary" [class.visible]="showMobileCta()" [routerLink]="[]" fragment="verfuegbarkeit">{{ t.ui('ctaCheckAvailability') }}</a>
+      <a class="mobile-sticky-cta btn btn-primary" [class.visible]="showMobileCta()" [routerLink]="[]" fragment="verfuegbarkeit" (click)="navigateToBooking($event)">{{ t.ui('ctaCheckAvailability') }}</a>
+    } @else {
+      <section class="missing-villa container">
+        <p class="eyebrow">404</p>
+        <h1>{{ t.inline('Diese Villa wurde nicht gefunden.', 'This villa could not be found.', 'Эта вилла не найдена.', 'No hemos encontrado esta villa.') }}</h1>
+        <p>{{ t.inline('Entdecken Sie unsere beiden Villen auf der Startseite.', 'Discover our two villas on the home page.', 'Познакомьтесь с нашими двумя виллами на главной странице.', 'Descubre nuestras dos villas en la página de inicio.') }}</p>
+        <a class="btn btn-primary" [routerLink]="['/' + locale()]">{{ t.inline('Zu den Villen', 'View the villas', 'К виллам', 'Ver las villas') }}</a>
+      </section>
     }
   `,
   styles: [`
     :host { display: block; }
-    .villa-content { overflow: clip; }
     section[id] { scroll-margin-top: 8.5rem; }
     .villa-hero { min-height: min(830px, calc(100svh - 72px)); position: relative; display: grid; overflow: hidden; background: var(--c-adria); }
     .villa-hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -254,6 +285,21 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     .stat-grid strong { display: block; font-family: var(--font-display); font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1; color: var(--c-champagne); font-weight: 400; }
     .stat-grid span { display: block; margin-top: .65rem; font-size: .78rem; text-transform: uppercase; letter-spacing: .13em; }
 
+    .villa-details { background: var(--c-limestone); }
+    .villa-details-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .55fr); gap: clamp(2rem, 8vw, 8rem); align-items: end; margin-bottom: clamp(3rem, 7vw, 6rem); }
+    .villa-details-heading h2 { max-width: 11ch; }
+    .villa-details-heading > p { max-width: 42ch; margin: 0; color: var(--c-olive); }
+    .villa-detail-stories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--c-sand); }
+    .villa-detail-story { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1.25rem; padding: clamp(2rem, 4vw, 3.5rem); border-bottom: 1px solid var(--c-sand); }
+    .villa-detail-story:nth-child(odd):not(.featured) { border-right: 1px solid var(--c-sand); }
+    .villa-detail-story.featured { grid-column: 1 / -1; grid-template-columns: 3rem minmax(0, 1fr); padding-inline: 0; }
+    .villa-detail-story.featured > div { columns: 2; column-gap: clamp(2rem, 7vw, 7rem); }
+    .villa-detail-story.featured h3 { column-span: all; }
+    .detail-index { color: var(--c-terracotta); font-size: .72rem; letter-spacing: .16em; padding-top: .45rem; }
+    .villa-detail-story h3 { margin-bottom: 1.25rem; color: var(--c-adria); font-size: clamp(1.55rem, 2.4vw, 2.25rem); }
+    .villa-detail-story p { color: color-mix(in srgb, var(--c-anthracite) 82%, transparent); }
+    .villa-detail-story p:last-child { margin-bottom: 0; }
+
     .atmosphere-band { min-height: clamp(480px, 65vw, 790px); position: relative; display: flex; align-items: flex-end; overflow: hidden; }
     .atmosphere-band > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .atmosphere-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(9,26,34,.75), rgba(9,26,34,.04) 65%); }
@@ -286,9 +332,6 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 700ms cubic-bezier(.2,.7,.2,1); }
     .gallery-item:hover img { transform: scale(1.045); }
     .gallery-item > span { position: absolute; right: 1rem; bottom: .75rem; color: white; font-size: .72rem; letter-spacing: .16em; text-shadow: 0 1px 10px rgba(0,0,0,.7); }
-    .gallery-placeholder { background: linear-gradient(135deg, var(--c-sand), var(--c-olive)); }
-    .video-tour video { display: block; width: min(100%, 560px); max-height: 78vh; margin-inline: auto; border-radius: var(--radius); background: var(--c-adria); }
-
     .highlight-section { background: var(--c-adria); color: rgba(255,255,255,.78); }
     .light-heading h2, .amenities-panel h2 { color: var(--c-ivory); }
     .light-heading .eyebrow, .amenities-panel .eyebrow { color: var(--c-champagne); }
@@ -329,6 +372,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
       .highlight-card:nth-child(2) { border-right: 0; }
       .highlight-card:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,.18); }
       .amenities-panel { grid-template-columns: 1fr; }
+      .villa-details-heading { grid-template-columns: 1fr; }
       .mobile-sticky-cta {
         display: flex;
         justify-content: center;
@@ -371,6 +415,9 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
       .highlight-card:nth-child(n) { border-bottom: 1px solid rgba(255,255,255,.18); }
       .highlight-card:last-child { border-bottom: 0; }
       .amenities { columns: 1; }
+      .villa-detail-stories { grid-template-columns: 1fr; }
+      .villa-detail-story, .villa-detail-story.featured { grid-column: auto; grid-template-columns: 2rem minmax(0, 1fr); padding-inline: 0; border-right: 0 !important; }
+      .villa-detail-story.featured > div { columns: 1; }
       .video-tour { padding-inline: 0; }
       .video-tour h2, .video-tour .eyebrow { margin-inline: 1.1rem; }
       .video-tour video { border-radius: 0; width: 100%; }
@@ -385,6 +432,7 @@ export class VillaDetailComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly structuredData = inject(StructuredDataService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   protected readonly distances = DISTANCES;
   protected readonly showMobileCta = signal(false);
@@ -397,7 +445,16 @@ export class VillaDetailComponent implements OnInit {
     const slug = this.route.snapshot.paramMap.get('slug');
     this.villa = VILLAS.find((v) => v.slug === slug);
     this.otherVilla = VILLAS.find((v) => v.slug !== slug);
-    if (!this.villa) return;
+    if (!this.villa) {
+      this.seo.setPage({
+        locale,
+        path: `${locale === 'de' ? 'villen' : 'villas'}/${slug ?? 'unbekannt'}`,
+        title: this.t.inline('Villa nicht gefunden | MonteMare & Lumina', 'Villa not found | MonteMare & Lumina', 'Вилла не найдена | MonteMare & Lumina', 'Villa no encontrada | MonteMare & Lumina'),
+        description: this.t.inline('Die angeforderte Villa wurde nicht gefunden.', 'The requested villa could not be found.', 'Запрошенная вилла не найдена.', 'No se ha encontrado la villa solicitada.'),
+        noindex: true,
+      });
+      return;
+    }
 
     const routeBase = locale === 'de' ? 'villen' : 'villas';
     this.seo.setPage({
@@ -432,9 +489,32 @@ export class VillaDetailComponent implements OnInit {
     return this.t.locale();
   }
 
+  protected navigateToBooking(event: Event): void {
+    event.preventDefault();
+    void this.router.navigate([], { relativeTo: this.route, fragment: 'verfuegbarkeit' }).then(() => {
+      this.scrollToBooking();
+    });
+  }
+
+  private scrollToBooking(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      const target = document.getElementById('verfuegbarkeit');
+      if (!target) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }));
+  }
+
   @HostListener('window:scroll')
   protected updateMobileCta(): void {
-    this.showMobileCta.set(typeof window !== 'undefined' && window.scrollY > window.innerHeight * 0.72);
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const bookingSection = document.getElementById('verfuegbarkeit');
+    const bookingBounds = bookingSection?.getBoundingClientRect();
+    const bookingIsVisible = !!bookingBounds && bookingBounds.top < window.innerHeight && bookingBounds.bottom > 0;
+    this.showMobileCta.set(window.scrollY > window.innerHeight * 0.72 && !bookingIsVisible);
   }
 
   protected heroImage(): string {

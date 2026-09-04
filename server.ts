@@ -30,9 +30,16 @@ export function app(): express.Express {
   const indexHtml = join(serverDistFolder, 'index.server.html');
   const commonEngine = new CommonEngine();
 
+  server.disable('x-powered-by');
   server.set('trust proxy', 1);
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
+  server.use((_req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
 
   server.get('/robots.txt', (req, res) => {
     const origin = publicOrigin(req);

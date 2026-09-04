@@ -4,7 +4,7 @@ import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
 import { StructuredDataService } from '../../core/services/structured-data.service';
 import { DISTANCES } from '../../core/data/content.data';
-import { Locale } from '../../core/models/villa.model';
+import { Locale, LocalizedText } from '../../core/models/villa.model';
 
 @Component({
   selector: 'app-location',
@@ -12,38 +12,144 @@ import { Locale } from '../../core/models/villa.model';
   imports: [RouterLink],
   template: `
     <header class="page-hero container">
-      <p class="eyebrow">Smokov vijenac · Drobnići · Budva · Montenegro</p>
-      <h1>{{ t.inline('Lage: Budva Riviera', 'Location: Budva Riviera', 'Расположение: Будванская ривьера', 'Ubicación: Riviera de Budva') }}</h1>
-      <p>
+      <p class="eyebrow">{{ t.inline('Petrovac, Gemeinde Budva, Montenegro', 'Petrovac, Budva Municipality, Montenegro', 'Петровац, муниципалитет Будва, Черногория', 'Petrovac, municipio de Budva, Montenegro') }}</p>
+      <h1>{{ t.inline('Hier wirst du sein', 'This is where you’ll stay', 'Здесь вы будете отдыхать', 'Aquí te alojarás') }}</h1>
+      <p class="location-intro">
         {{ t.inline(
-          'Beide Villen liegen am Smokov vijenac in Drobnići, einer ruhigen Hanglage in der Gemeinde Budva. Die genaue Anschrift lautet: Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro.',
-          'Both villas are located at Smokov vijenac in Drobnići, a quiet hillside setting in Budva Municipality. The address is Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro.',
-          'Обе виллы расположены по адресу Smokov vijenac в Дробничи, в тихом месте на склоне в муниципалитете Будва. Точный адрес: Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro.',
-          'Ambas villas se encuentran en Smokov vijenac, Drobnići, en una tranquila ladera del municipio de Budva. La dirección exacta es: Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro.') }}
+          'Unsere Unterkunft liegt in der malerischen Küstenregion Reževići in der Gemeinde Budva, unweit von Sveti Stefan auf einem bewaldeten Hang, rund 90 Meter über dem Meeresspiegel, in zweiter Reihe einer modernen Ferienvillenanlage mit traumhaftem Blick auf das offene Meer und die dahinterliegenden Berge.',
+          'Our accommodation is located in the picturesque coastal region of Reževići in Budva Municipality. Not far from Sveti Stefan, it sits on a wooded hillside around 90 metres above sea level, in the second row of a modern holiday-villa development with spectacular views of the open sea and the mountains beyond.',
+          'Наши виллы расположены в живописном прибрежном районе Режевичи муниципалитета Будва. Недалеко от Свети-Стефана, на лесистом склоне примерно в 90 метрах над уровнем моря, они находятся во втором ряду современного комплекса вилл и открывают великолепный вид на море и горы.',
+          'Nuestro alojamiento se encuentra en la pintoresca región costera de Reževići, en el municipio de Budva. Está situado cerca de Sveti Stefan, en una ladera arbolada a unos 90 metros sobre el nivel del mar, en la segunda línea de un moderno complejo de villas vacacionales con magníficas vistas al mar abierto y a las montañas.') }}
       </p>
+      <p class="location-note">{{ t.inline(
+        'Die ruhige Lage verbindet Erholung inmitten der Natur mit einer hervorragenden Anbindung an die schönsten Strände und Sehenswürdigkeiten der montenegrinischen Küste.',
+        'The peaceful setting combines relaxation in the heart of nature with excellent access to Montenegro’s most beautiful beaches and coastal sights.',
+        'Тихое расположение среди природы сочетается с удобным доступом к самым красивым пляжам и достопримечательностям черногорского побережья.',
+        'La tranquilidad en plena naturaleza se combina con un excelente acceso a las playas y lugares de interés más bellos de la costa montenegrina.') }}</p>
     </header>
 
-    <section class="section container">
-      <h2>{{ t.ui('distancesTitle') }}</h2>
-      <ul class="distances">
-        @for (d of distances; track d.label.de) {
-          <li><span>{{ t.t(d.label) }}</span><strong>{{ d.value }}</strong></li>
-        }
-      </ul>
+    <div class="horizon-divider" aria-hidden="true"></div>
+
+    <section class="section container location-details">
+      <div class="location-grid">
+        <div class="location-main">
+        <article class="content-block getting-around">
+          <p class="eyebrow">{{ t.inline('Mobilität', 'Getting around', 'Как передвигаться', 'Cómo desplazarse') }}</p>
+          <h2>{{ t.inline('Unterwegs rund um die Unterkunft', 'Getting around the area', 'Передвижение по окрестностям', 'Cómo moverse por los alrededores') }}</h2>
+          <p>{{ t.inline(
+            'Für maximale Flexibilität empfehlen wir die Anreise mit dem Auto. So kannst du die Küste und die zahlreichen Strände bequem erkunden.',
+            'For maximum flexibility, we recommend arriving by car. This makes it easy to explore the coastline and its many beaches.',
+            'Для максимальной свободы передвижения рекомендуем приезжать на автомобиле. Так вы сможете с комфортом исследовать побережье и многочисленные пляжи.',
+            'Para disfrutar de la máxima flexibilidad, recomendamos llegar en coche. Así podrás explorar cómodamente la costa y sus numerosas playas.') }}</p>
+          <p>{{ t.inline(
+            'Die Altstadt von Budva mit zahlreichen Restaurants, Geschäften und Märkten ist in etwa 15 Minuten erreichbar.',
+            'Budva’s Old Town, with its many restaurants, shops and markets, is around 15 minutes away.',
+            'До Старого города Будвы с многочисленными ресторанами, магазинами и рынками можно добраться примерно за 15 минут.',
+            'El casco antiguo de Budva, con numerosos restaurantes, tiendas y mercados, se encuentra a unos 15 minutos.') }}</p>
+        </article>
+
+        <article class="content-block">
+          <p class="eyebrow">{{ t.inline('Baden an der Adria', 'Swimming in the Adriatic', 'Пляжи Адриатики', 'Baños en el Adriático') }}</p>
+          <h2>{{ t.inline('Strände in der Nähe', 'Nearby beaches', 'Пляжи поблизости', 'Playas cercanas') }}</h2>
+          <ul class="beach-list">
+            @for (beach of nearbyBeaches; track beach.name) {
+              <li><span>{{ beach.name }}</span><strong>{{ t.t(beach.travelTime) }}</strong></li>
+            }
+          </ul>
+        </article>
+
+        <article class="content-block">
+          <p class="eyebrow">{{ t.inline('Genuss & Versorgung', 'Dining & essentials', 'Рестораны и магазины', 'Restaurantes y compras') }}</p>
+          <h2>{{ t.inline('Restaurants und Geschäfte', 'Restaurants and shops', 'Рестораны и магазины', 'Restaurantes y tiendas') }}</h2>
+          <p>{{ t.inline(
+            'An der Zufahrtsstraße zur Villa, nur wenige Schritte entfernt, befindet sich ein Vier-Sterne-Hotel mit Restaurant und Frühstücksmöglichkeit. Weitere lokale Restaurants sind innerhalb von 5 bis 10 Minuten mit dem Auto erreichbar.',
+            'A four-star hotel with a restaurant and breakfast service is located on the access road, just a few steps from the villas. Additional local restaurants are within a 5- to 10-minute drive.',
+            'На подъездной дороге, всего в нескольких шагах от вилл, находится четырёхзвёздочный отель с рестораном и завтраками. До других местных ресторанов можно доехать за 5–10 минут.',
+            'En la carretera de acceso, a pocos pasos de las villas, hay un hotel de cuatro estrellas con restaurante y servicio de desayuno. Otros restaurantes locales se encuentran a entre 5 y 10 minutos en coche.') }}</p>
+        </article>
+        </div>
+
+        <aside class="location-aside">
+        <article class="highlight-card market-card">
+          <div class="card-meta">
+            <span class="card-symbol" aria-hidden="true">⌂</span>
+            <span class="card-time">{{ t.inline('wenige Gehminuten', 'a few minutes’ walk', 'несколько минут пешком', 'a pocos minutos a pie') }}</span>
+          </div>
+          <p class="eyebrow">HDL</p>
+          <h2>{{ t.inline('Einkaufen zu Fuß', 'Groceries within walking distance', 'Магазин в пешей доступности', 'Compras a pocos pasos') }}</h2>
+          <p>{{ t.inline(
+            'Ein besonderer Pluspunkt: In unmittelbarer Nähe hat kürzlich ein großer HDL-Supermarkt eröffnet, der in wenigen Gehminuten erreichbar ist. So kannst du jederzeit bequem frische Lebensmittel und Dinge des täglichen Bedarfs einkaufen und deinen Aufenthalt ganz entspannt genießen.',
+            'A particular advantage is the large HDL supermarket that recently opened nearby and can be reached within a few minutes on foot. Fresh groceries and everyday essentials are always conveniently close at hand.',
+            'Особое преимущество — недавно открывшийся неподалёку большой супермаркет HDL, до которого можно дойти за несколько минут. Свежие продукты и всё необходимое для повседневной жизни всегда будут рядом.',
+            'Una ventaja especial es el gran supermercado HDL inaugurado recientemente en las inmediaciones, a pocos minutos a pie. Tendrás siempre a mano alimentos frescos y todo lo necesario para el día a día.') }}</p>
+          <div class="card-tags" [attr.aria-label]="t.inline('Vorteile', 'Benefits', 'Преимущества', 'Ventajas')">
+            <span>{{ t.inline('Frische Lebensmittel', 'Fresh groceries', 'Свежие продукты', 'Alimentos frescos') }}</span>
+            <span>{{ t.inline('Täglicher Bedarf', 'Everyday essentials', 'Всё необходимое', 'Productos básicos') }}</span>
+          </div>
+        </article>
+
+        <article class="highlight-card budva-card">
+          <div class="card-meta">
+            <span class="card-symbol" aria-hidden="true">✦</span>
+            <span class="card-time">{{ t.inline('ca. 15 Autominuten', 'approx. 15 min by car', 'около 15 мин. на автомобиле', 'aprox. 15 min en coche') }}</span>
+          </div>
+          <p class="eyebrow">Budva</p>
+          <h2>{{ t.inline('Historische Altstadt', 'Historic Old Town', 'Исторический Старый город', 'Casco antiguo histórico') }}</h2>
+          <p>{{ t.inline(
+            'Budvas historische Altstadt mit lebhaften Cafés, Nachtleben, Einkaufsmöglichkeiten und Märkten erreichst du in etwa 15 Minuten.',
+            'Budva’s historic Old Town, with lively cafés, nightlife, shopping and markets, is around 15 minutes away.',
+            'До исторического Старого города Будвы с оживлёнными кафе, ночной жизнью, магазинами и рынками можно добраться примерно за 15 минут.',
+            'El casco antiguo de Budva, con animados cafés, vida nocturna, tiendas y mercados, está a unos 15 minutos.') }}</p>
+          <div class="card-tags" [attr.aria-label]="t.inline('Vor Ort', 'Highlights', 'Что вас ждёт', 'Qué encontrarás')">
+            <span>{{ t.inline('Cafés & Restaurants', 'Cafés & restaurants', 'Кафе и рестораны', 'Cafés y restaurantes') }}</span>
+            <span>{{ t.inline('Märkte & Nachtleben', 'Markets & nightlife', 'Рынки и ночная жизнь', 'Mercados y vida nocturna') }}</span>
+          </div>
+        </article>
+        </aside>
+      </div>
+
+      <article class="family-panel">
+        <div>
+          <p class="eyebrow">{{ t.inline('Für Groß und Klein', 'For all ages', 'Для всей семьи', 'Para todas las edades') }}</p>
+          <h2>{{ t.inline('Freizeit & Familienaktivitäten', 'Leisure & family activities', 'Отдых и развлечения для всей семьи', 'Ocio y actividades familiares') }}</h2>
+        </div>
+        <p>{{ t.inline(
+          'In Budva erwarten dich zahlreiche Freizeitmöglichkeiten für die ganze Familie – darunter Wasserparks, Bootsausflüge, Spielplätze und kinderfreundliche Strände. Auch Wanderwege und Abenteuerparks befinden sich in der näheren Umgebung.',
+          'Budva offers a wide range of activities for the whole family, including water parks, boat trips, playgrounds and child-friendly beaches. Hiking trails and adventure parks can also be found nearby.',
+          'В Будве вас ждёт множество развлечений для всей семьи: аквапарки, морские прогулки, игровые площадки и пляжи, подходящие для детей. Поблизости также находятся пешеходные маршруты и парки приключений.',
+          'Budva ofrece numerosas actividades para toda la familia, como parques acuáticos, excursiones en barco, parques infantiles y playas aptas para niños. También hay rutas de senderismo y parques de aventura en los alrededores.') }}</p>
+      </article>
+    </section>
+
+    <div class="horizon-divider" aria-hidden="true"></div>
+
+    <section class="section container map-section">
+      <div class="map-heading">
+        <div>
+          <p class="eyebrow">Smokov vijenac · Drobnići</p>
+          <h2>{{ t.inline('Die Umgebung auf einen Blick', 'The area at a glance', 'Окрестности на карте', 'La zona de un vistazo') }}</h2>
+        </div>
+        <ul class="distances">
+          @for (d of distances; track d.label.de) {
+            <li><span>{{ t.t(d.label) }}</span><strong>{{ t.t(d.value) }}</strong></li>
+          }
+        </ul>
+      </div>
 
       <div class="map-wrap">
         <iframe
-          src="https://www.openstreetmap.org/export/embed.html?bbox=18.8985%2C42.2360%2C18.9070%2C42.2430&amp;layer=mapnik&amp;marker=42.2395%2C18.9025"
-          [title]="t.inline('Lage der Villen am Smokov vijenac', 'Location of the villas at Smokov vijenac', 'Расположение вилл на Smokov vijenac', 'Ubicación de las villas en Smokov vijenac')"
+          src="https://www.google.com/maps?q=42.239775685552246%c18.903049972422934&amp;z=17&amp;output=embed"
+
+          [title]="t.inline('Lage der Villen am Smokov vijenac auf Google Maps', 'Location of the villas at Smokov vijenac on Google Maps', 'Расположение вилл на Smokov vijenac в Google Maps', 'Ubicación de las villas en Smokov vijenac en Google Maps')"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen>
         </iframe>
         <div class="map-caption">
           <p>{{ t.inline('Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, муниципалитет Будва, 85315, Черногория', 'Smokov vijenac, Drobnići, municipio de Budva, 85315, Montenegro') }}</p>
-          <a class="btn btn-quiet" href="https://www.openstreetmap.org/?mlat=42.2395&amp;mlon=18.9025#map=17/42.2395/18.9025"
+          <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=42.2395%2C18.9025"
              target="_blank" rel="noopener">
-            {{ t.inline('Große Karte öffnen', 'Open full map', 'Открыть большую карту', 'Abrir mapa completo') }}
+            {{ t.inline('In Google Maps öffnen', 'Open in Google Maps', 'Открыть в Google Maps', 'Abrir en Google Maps') }}
           </a>
         </div>
       </div>
@@ -51,16 +157,65 @@ import { Locale } from '../../core/models/villa.model';
 
   `,
   styles: [`
-    .page-hero { padding-block: var(--space-5) var(--space-3); max-width: 800px; }
-    .distances { list-style: none; padding: 0; max-width: 460px; margin-bottom: var(--space-4); }
+    .page-hero { padding-block: clamp(4rem, 10vw, 8rem) clamp(3rem, 7vw, 5.5rem); max-width: 1040px; }
+    .page-hero h1 { max-width: 12ch; }
+    .location-intro { max-width: 80ch; font-size: clamp(1.1rem, 1.8vw, 1.35rem); line-height: 1.75; color: var(--c-adria); }
+    .location-note { max-width: 72ch; margin-top: 1.5rem; padding-left: 1.25rem; border-left: 2px solid var(--c-champagne); color: var(--c-olive); line-height: 1.75; }
+    .location-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(330px, .8fr); gap: clamp(2rem, 4vw, 4rem); align-items: start; }
+    .location-main { display: flex; flex-direction: column; gap: clamp(3.5rem, 7vw, 6rem); }
+    .content-block { max-width: 760px; }
+    .content-block h2, .highlight-card h2 { margin-bottom: 1.25rem; }
+    .content-block p { line-height: 1.75; }
+    .beach-list { list-style: none; padding: 0; margin: 2rem 0 0; }
+    .beach-list li { display: flex; justify-content: space-between; gap: 1.5rem; padding: .9rem 0; border-bottom: 1px solid color-mix(in srgb, var(--c-sand) 75%, transparent); }
+    .beach-list strong { color: var(--c-adria); white-space: nowrap; }
+    .location-aside { position: sticky; top: 7rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .highlight-card { position: relative; isolation: isolate; overflow: hidden; padding: clamp(1.6rem, 2.5vw, 2.2rem); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+    .highlight-card::after { content: ''; position: absolute; z-index: -1; right: -4rem; bottom: -5rem; width: 12rem; height: 12rem; border: 1px solid color-mix(in srgb, var(--c-champagne) 45%, transparent); border-radius: 50%; pointer-events: none; }
+    .market-card { border: 1px solid color-mix(in srgb, var(--c-sand) 82%, transparent); background: linear-gradient(145deg, #fffefa 0%, var(--c-ivory) 68%, color-mix(in srgb, var(--c-sand) 28%, white) 100%); }
+    .market-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(var(--c-champagne), var(--c-terracotta)); }
+    .budva-card { background: linear-gradient(145deg, #183b4a 0%, var(--c-adria) 68%, #0d2632 100%); color: rgba(255,255,255,.76); box-shadow: var(--shadow-lifted); }
+    .budva-card::before { content: ''; position: absolute; inset: auto 0 0; height: 38%; background: repeating-linear-gradient(0deg, transparent 0 22px, rgba(255,255,255,.035) 22px 23px); pointer-events: none; }
+    .budva-card h2 { color: var(--c-limestone); }
+    .budva-card .eyebrow { color: var(--c-champagne); }
+    .highlight-card h2 { max-width: 12ch; margin: .55rem 0 1.15rem; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.02; text-wrap: balance; }
+    .highlight-card > p:not(.eyebrow) { margin-bottom: 1.5rem; font-size: .94rem; line-height: 1.72; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    .card-symbol { display: grid; place-items: center; flex: 0 0 2.65rem; width: 2.65rem; height: 2.65rem; border: 1px solid var(--c-champagne); border-radius: 50%; color: var(--c-terracotta); font-family: var(--font-display); }
+    .budva-card .card-symbol { color: var(--c-champagne); }
+    .card-time { padding: .45rem .7rem; border: 1px solid color-mix(in srgb, var(--c-sand) 72%, transparent); border-radius: 999px; color: var(--c-olive); font-size: .68rem; font-weight: 600; letter-spacing: .035em; text-align: center; }
+    .budva-card .card-time { border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.7); }
+    .card-tags { display: flex; flex-wrap: wrap; gap: .45rem; padding-top: 1.1rem; border-top: 1px solid color-mix(in srgb, var(--c-sand) 66%, transparent); }
+    .card-tags span { padding: .38rem .58rem; border-radius: 3px; background: color-mix(in srgb, var(--c-sand) 28%, transparent); color: var(--c-olive); font-size: .68rem; line-height: 1.25; }
+    .budva-card .card-tags { border-top-color: rgba(255,255,255,.14); }
+    .budva-card .card-tags span { background: rgba(255,255,255,.08); color: rgba(255,255,255,.72); }
+    .family-panel { display: grid; grid-template-columns: minmax(240px, .7fr) minmax(0, 1.3fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; margin-top: clamp(3rem, 7vw, 6rem); padding: clamp(2rem, 5vw, 4rem); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--c-sand) 28%, transparent); }
+    .family-panel h2 { margin-bottom: 0; }
+    .family-panel > p { margin: 0; font-size: 1.05rem; line-height: 1.8; }
+    .map-heading { display: grid; grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: clamp(2rem, 5vw, 5rem); align-items: end; margin-bottom: var(--space-4); }
+    .map-heading h2 { margin-bottom: 0; }
+    .distances { list-style: none; padding: 0; margin: 0; }
     .distances li { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--c-sand); padding: 0.4rem 0; }
+    .distances strong { color: var(--c-adria); }
     .map-wrap { overflow: hidden; border: 1px solid color-mix(in srgb, var(--c-sand) 75%, transparent); border-radius: var(--radius-lg); background: var(--c-ivory); box-shadow: var(--shadow-lifted); }
     .map-wrap iframe { display: block; width: 100%; height: clamp(360px, 52vw, 600px); border: 0; }
     .map-caption { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) var(--space-3); }
     .map-caption p { margin: 0; color: var(--c-olive); font-size: 0.9rem; max-width: 70ch; }
     .map-caption .btn { flex: 0 0 auto; }
+    @media (max-width: 900px) {
+      .location-grid { grid-template-columns: 1fr; }
+      .location-aside { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+      .map-heading { grid-template-columns: 1fr; align-items: start; }
+    }
     @media (max-width: 700px) {
       .page-hero { padding-block: 3rem 1.5rem; }
+      .location-intro { font-size: 1.05rem; }
+      .location-grid { gap: 3rem; }
+      .location-main { gap: 3.5rem; }
+      .location-aside { grid-template-columns: 1fr; }
+      .family-panel { grid-template-columns: 1fr; padding: 1.5rem; }
+      .beach-list li { align-items: baseline; gap: .75rem; }
+      .beach-list strong { text-align: right; }
       .distances li { gap: 1rem; align-items: baseline; }
       .distances strong { white-space: nowrap; }
       .map-wrap { border-radius: 10px; }
@@ -77,6 +232,28 @@ export class LocationComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly distances = DISTANCES;
+  protected readonly nearbyBeaches: Array<{ name: string; travelTime: LocalizedText }> = [
+    {
+      name: 'Drobni Pijesak',
+      travelTime: { de: 'ca. 3 Autominuten', en: 'approx. 3 min by car', ru: 'около 3 мин. на автомобиле', es: 'aprox. 3 min en coche' },
+    },
+    {
+      name: 'Crvena Glavica',
+      travelTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
+    },
+    {
+      name: 'Sveti Stefan Beach',
+      travelTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
+    },
+    {
+      name: 'Queen’s Beach & King’s Beach',
+      travelTime: { de: 'ca. 6 Autominuten', en: 'approx. 6 min by car', ru: 'около 6 мин. на автомобиле', es: 'aprox. 6 min en coche' },
+    },
+    {
+      name: 'Kamenovo Beach',
+      travelTime: { de: 'ca. 8 Autominuten', en: 'approx. 8 min by car', ru: 'около 8 мин. на автомобиле', es: 'aprox. 8 min en coche' },
+    },
+  ];
 
   ngOnInit(): void {
     const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
@@ -93,16 +270,16 @@ export class LocationComponent implements OnInit {
         es: 'location-budva-riviera',
       },
       title: ({
-        de: 'Lage: Budva Riviera & Reževići | Villa MonteMare & Lumina',
-        en: 'Location: Budva Riviera & Reževići | Villa MonteMare & Lumina',
-        ru: 'Расположение: Будванская ривьера и Режевичи | Villa MonteMare & Lumina',
-        es: 'Ubicación: Riviera de Budva y Reževići | Villa MonteMare & Lumina',
+        de: 'Reževići & Budva Riviera: Lage der Luxusvillen',
+        en: 'Reževići & Budva Riviera: Luxury Villa Location',
+        ru: 'Режевичи и Будванская ривьера: расположение вилл',
+        es: 'Reževići y Riviera de Budva: ubicación de las villas',
       } as Record<Locale, string>)[locale],
       description: ({
-        de: 'Reževići an der Budva Riviera: Entfernungen zu Sveti Stefan, Petrovac, Budva und den Flughäfen Tivat und Podgorica.',
-        en: 'Reževići on the Budva Riviera: distances to Sveti Stefan, Petrovac, Budva, and Tivat and Podgorica airports.',
-        ru: 'Режевичи на Будванской ривьере: расстояния до Свети-Стефана, Петроваца, Будвы и аэропортов Тиват и Подгорица.',
-        es: 'Reževići en la Riviera de Budva: distancias a Sveti Stefan, Petrovac, Budva y los aeropuertos de Tivat y Podgorica.',
+        de: 'Ruhige Villenlage in Reževići, 90 Meter über der Adria: nahe Drobni Pijesak, Sveti Stefan und Budva sowie Einkaufsmöglichkeiten und Restaurants.',
+        en: 'Peaceful villa location in Reževići, 90 metres above the Adriatic: close to Drobni Pijesak, Sveti Stefan, Budva, shops and restaurants.',
+        ru: 'Тихое расположение вилл в Режевичи, в 90 метрах над Адриатикой: рядом с Дробни-Пиесак, Свети-Стефаном, Будвой, магазинами и ресторанами.',
+        es: 'Villas en una zona tranquila de Reževići, a 90 metros sobre el Adriático: cerca de Drobni Pijesak, Sveti Stefan, Budva, tiendas y restaurantes.',
       } as Record<Locale, string>)[locale],
       ogImage: '/assets/media/lumina/lumina-aerial-location.webp',
       ogImageAlt: this.t.inline('Lage der Villen an der Budva Riviera', 'Villa location on the Budva Riviera', 'Расположение вилл на Будванской ривьере', 'Ubicación de las villas en la Riviera de Budva'),

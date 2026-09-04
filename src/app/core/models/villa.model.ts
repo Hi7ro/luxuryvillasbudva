@@ -18,6 +18,11 @@ export interface VillaFaqItem {
   answer: LocalizedText;
 }
 
+export interface VillaDetailSection {
+  title: LocalizedText;
+  paragraphs: LocalizedText[];
+}
+
 export interface Villa {
   slug: VillaSlug; // used for both /villen/:slug and /villas/:slug
   name: string;
@@ -25,6 +30,7 @@ export interface Villa {
   positioning: LocalizedText;
   intro: LocalizedText;
   description: LocalizedText[];
+  detailSections: VillaDetailSection[];
   guests: number;
   bedrooms: number;
   bathrooms: number;
@@ -43,7 +49,7 @@ export interface Villa {
 
 export interface DistanceItem {
   label: LocalizedText;
-  value: string; // e.g. "≈ 3 Min. zu Fuß"
+  value: LocalizedText;
 }
 
 export interface GuideArticle {

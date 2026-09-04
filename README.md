@@ -7,10 +7,9 @@ and a guided booking inquiry that prepares either an email or WhatsApp message
 for the guest to review and send. The Angular SSR Express server also provides a small,
 database-free endpoint for iCal availability synchronization.
 
-See the strategic scope discussion in-chat for why Phase 1 deliberately
-excludes the Spring Boot backend, PostgreSQL, ICS calendar sync and admin
-panel from the original brief: at two villas, that stack is overhead before
-there is proven demand. Phase 2/3 below covers when and how to add it.
+The current phase deliberately avoids a separate Spring Boot backend,
+PostgreSQL and admin panel. The lightweight Angular SSR server already merges
+external iCal feeds and exposes only blocked dates to the browser.
 
 ## 1. Local setup
 
@@ -18,14 +17,13 @@ there is proven demand. Phase 2/3 below covers when and how to add it.
 npm install
 npm start          # dev server, http://localhost:4200
 npm run build       # production build with SSR/prerendering
+npm test            # strict Angular/TypeScript template check
+npm run check       # typecheck followed by a production build
 ```
 
-This project was hand-authored to match Angular CLI v18 conventions but was
-**not** run through `ng new` in this environment (no npm install was
-performed here). Before your first build, run `npm install` and fix any
-version-drift errors — Angular's exact release changes weekly; confirm
-`@angular/*` versions against the current stable release rather than trusting
-the versions pinned in `package.json`.
+Install the locked dependencies with `npm install` before the first local run.
+Keep Angular framework packages on the same compatible minor version when
+upgrading.
 
 ## 2. Required before this is production-ready
 
@@ -34,13 +32,12 @@ These are placeholders on purpose — nothing here was invented to "look done":
 | Item | Where | Status |
 |---|---|---|
 | Production domain | Hosting environment | Set `PUBLIC_SITE_ORIGIN`; canonical and social URLs also derive automatically from the live request |
-| Temporary phone / WhatsApp number (E.164) | `booking-widget.component.ts`, `footer.component.ts` | `436642660438` |
-| Contact email | Booking widget and footer | `michael.c.neumann@protonmail.com` |
-| Operator name, email, address for footer/Impressum | `footer.component.ts` | placeholder text |
-| Impressum & Datenschutzerklärung pages | not built yet | legally required in DE/AT/CH-facing sites, add before go-live |
-| Licensed photography | `galleryImagePlaceholders` in `content.data.ts`, hero backgrounds in CSS | currently CSS gradients, not photos |
-| Self-hosted font files | `src/assets/fonts/fraunces-latin.woff2`, `inter-latin.woff2` | not included — download licensed/OFL files and place them there |
-| Prices, seasons, minimum stay, cancellation terms | not built yet | explicitly excluded — do not fabricate |
+| Phone / WhatsApp number | `src/app/core/config/contact.config.ts` | `+43 664 266 0438` |
+| Contact email | `src/app/core/config/contact.config.ts` | `michael.c.neumann@protonmail.com` |
+| Operator name and postal address | Legal pages | still required before go-live |
+| Impressum & privacy policy | `/[locale]/impressum`, `/[locale]/datenschutz` | implemented; legal placeholders still require review |
+| Photography and video | `src/assets/media` and `content.data.ts` | integrated; confirm publication rights |
+| Seasonal nightly rates | `src/app/core/config/pricing.config.ts` | €350–€500; confirm October, minimum stay and cancellation terms |
 | Google Search Console + GA4/Plausible | not wired | see section 5 |
 
 ## 3. Live-Verfügbarkeit über Airbnb / Booking.com
@@ -92,26 +89,25 @@ policy accordingly.
 ## 5. What's intentionally NOT in Phase 1
 
 - Spring Boot backend, PostgreSQL, Flyway and admin panel
-- The availability calendar and server-side iCal synchronization are included;
-  the production iCal URLs still need to be configured as environment variables.
+- Production iCal URLs still need to be configured as environment variables.
 - Villenvergleich as a separate page (folded into the homepage section)
 - 5 guide articles (2 shipped: beaches, car rental — the pattern is proven,
   duplicate it for the remaining topics in the original brief once Phase 1
   content is reviewed and live)
 - Google Business Profile setup, review integration
-- Automated tests (unit/e2e) — add once the component structure has settled;
-  writing tests against UI that will still change wastes the effort
+- Automated browser/unit tests are not yet configured. `npm test` currently
+  performs strict TypeScript and Angular template checking.
 
 ## 6. SEO go-live checklist
 
 - [ ] Set `PUBLIC_SITE_ORIGIN`, redeploy, and re-check `view-source` output (SSR must emit full text, not just `<app-root></app-root>`)
-- [ ] Verify domain in Google Search Console (both `/de` and `/en` as separate URL prefixes under one property)
+- [ ] Verify the production domain in Google Search Console and inspect all four language routes
 - [ ] Submit the dynamically generated `sitemap.xml` in Search Console; all current guides and four language variants are included automatically
 - [ ] Bing Webmaster Tools (import from GSC)
 - [ ] Run Lighthouse on `/de`, `/de/villen/villa-monte-mare`, `/de/lage-budva-riviera` — target LCP < 2.5s, CLS < 0.1, INP < 200ms
 - [ ] Validate JSON-LD with Google's Rich Results Test on all 3 page types (VacationRental, FAQPage, Article)
-- [ ] Confirm hreflang pairs resolve correctly both directions (`/de/...` ⇄ `/en/...`)
-- [ ] Add Impressum/Datenschutz pages and link them from the footer before any paid or organic traffic goes live (DE/AT/CH legal requirement)
+- [ ] Confirm hreflang pairs resolve correctly in German, English, Russian and Spanish
+- [ ] Replace the remaining operator placeholders and have Impressum/Datenschutz reviewed before go-live
 - [ ] Consent banner before GA4/Plausible/maps load — none is wired yet, by design
 
 ## 7. Known simplification to revisit

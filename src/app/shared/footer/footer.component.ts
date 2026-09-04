@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
+import { CONTACT } from '../../core/config/contact.config';
 
 @Component({
   selector: 'app-footer',
@@ -19,16 +20,15 @@ import { TranslationService } from '../../core/services/translation.service';
         <div>
           <p class="col-title">{{ t.inline('Kontakt', 'Contact', 'Контакты', 'Contacto') }}</p>
           <p class="muted">
-            E-Mail: <a href="mailto:michael.c.neumann@protonmail.com">michael.c.neumann&#64;protonmail.com</a><br />
+            E-Mail: <a [href]="'mailto:' + contact.email">{{ contact.email }}</a><br />
             {{ t.inline('Telefon', 'Phone', 'Телефон', 'Teléfono') }}:
-            <a href="tel:+436642660438"></a><br />
-            WhatsApp: <a href="https://wa.me/38268210358" target="_blank" rel="noopener">+382 68 210 358</a>
+            <a [href]="'tel:' + contact.phoneE164">{{ contact.phoneDisplay }}</a><br />
+            WhatsApp: <a [href]="'https://wa.me/' + contact.whatsappNumber" target="_blank" rel="noopener noreferrer">{{ contact.phoneDisplay }}</a>
           </p>
         </div>
         <div>
           <p class="col-title">{{ t.inline('Rechtliches', 'Legal', 'Правовая информация', 'Información legal') }}</p>
           <p class="muted">
-            <!-- PLACEHOLDER pages: Impressum / Datenschutz still need real operator + hosting data -->
             <a [routerLink]="['/' + t.locale(), 'impressum']">{{ t.inline('Impressum', 'Legal notice', 'Правовая информация', 'Aviso legal') }}</a>
             ·
             <a [routerLink]="['/' + t.locale(), 'datenschutz']">{{ t.inline('Datenschutz', 'Privacy policy', 'Конфиденциальность', 'Privacidad') }}</a>
@@ -69,5 +69,6 @@ import { TranslationService } from '../../core/services/translation.service';
 })
 export class FooterComponent {
   protected readonly t = inject(TranslationService);
+  protected readonly contact = CONTACT;
   protected readonly year = new Date().getFullYear();
 }

@@ -66,5 +66,11 @@ export const routes: Routes = [
   { path: 'ru/guides/:slug', data: { locale: 'ru' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
   { path: 'es/guides/:slug', data: { locale: 'es' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
 
+  ...(['de', 'en', 'ru', 'es'] as const).map((locale) => ({
+    path: `${locale}/**`,
+    data: { locale },
+    loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  })),
+
   { path: '**', redirectTo: 'de' },
 ];

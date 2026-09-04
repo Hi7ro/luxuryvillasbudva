@@ -30,7 +30,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
       </div>
       <div class="hero-content container">
         <p class="eyebrow">{{ t.ui('heroLocationLine') }}</p>
-        <h1>{{ t.inline('Über der Adria. Fernab von allem.', 'Above the Adriatic. Away from everything.', 'Над Адриатикой. Вдали от суеты.', 'Sobre el Adriático. Lejos de todo.') }}</h1>
+        <h1>{{ t.inline('Über der Adria – fernab von allem', 'Above the Adriatic – away from it all', 'Над Адриатикой — вдали от суеты', 'Sobre el Adriático, lejos de todo') }}</h1>
         <p class="hero-sub">
           {{ t.inline('Zwei private Luxusvillen mit Pool und Panoramablick an der Budva Riviera.', 'Two private luxury villas with pools and panoramic views on the Budva Riviera.', 'Две частные роскошные виллы с бассейнами и панорамным видом на Будванской ривьере.', 'Dos villas de lujo privadas con piscina y vistas panorámicas en la Riviera de Budva.') }}
         </p>
@@ -102,7 +102,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
 
     <section class="section container" id="galerie">
       <p class="eyebrow">MonteMare &amp; Lumina</p>
-      <h2>{{ t.inline('Zwei Villen. Eine besondere Perspektive.', 'Two villas. One exceptional perspective.', 'Две виллы. Один исключительный вид.', 'Dos villas. Una perspectiva excepcional.') }}</h2>
+      <h2>{{ t.inline('Zwei Villen – eine besondere Perspektive', 'Two villas – one exceptional perspective', 'Две виллы — один особенный ракурс', 'Dos villas, una perspectiva excepcional') }}</h2>
       <app-image-lightbox #homeLightbox [images]="homeGalleryImages" [altText]="homeGalleryAlt"
         [label]="t.inline('Bildergalerie der Villen', 'Villa image gallery', 'Фотогалерея вилл', 'Galería de las villas')" />
       <div class="home-gallery">
@@ -122,36 +122,73 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     <div class="horizon-divider" aria-hidden="true"></div>
 
     <section class="section container compare">
+      <p class="eyebrow">MonteMare &amp; Lumina</p>
       <h2>{{ t.ui('compareTitle') }}</h2>
       <div class="compare-grid">
-        <div>
-          <h3>{{ t.inline('Gemeinsam', 'Shared', 'Общее', 'En común') }}</h3>
-          <ul>
-            <li>{{ t.inline('Bis zu 6 Gäste, exklusive Nutzung', 'Up to 6 guests, exclusive use', 'До 6 гостей, эксклюзивное пользование', 'Hasta 6 huéspedes, uso exclusivo') }}</li>
+        <div class="compare-card compare-card-shared">
+          <span class="compare-label">{{ t.inline('Beide Villen gemeinsam', 'Both villas together', 'Обе виллы вместе', 'Ambas villas juntas') }}</span>
+          <h3>{{ t.inline('Doppelt so viel Raum für besondere Aufenthalte', 'Twice the space for an exceptional stay', 'Вдвое больше пространства для особенного отдыха', 'El doble de espacio para una estancia excepcional') }}</h3>
+          <p>{{ t.inline('Beide Villen verbinden modernes Design, Privatsphäre und höchsten Komfort auf jeweils drei Ebenen – eingebettet zwischen den Bergen und der montenegrinischen Adriaküste.', 'Both villas combine modern design, privacy and exceptional comfort across three levels, nestled between the mountains and Montenegro’s Adriatic coast.', 'Обе виллы сочетают современный дизайн, уединение и высокий уровень комфорта на трёх этажах, между горами и Адриатическим побережьем Черногории.', 'Ambas villas combinan diseño moderno, privacidad y el máximo confort en tres plantas, entre las montañas y la costa adriática de Montenegro.') }}</p>
+          <ul class="compare-facts">
+            <li><strong>12</strong><span>{{ t.inline('Gäste bei Buchung beider Villen', 'guests when booking both villas', 'гостей при бронировании обеих вилл', 'huéspedes al reservar ambas villas') }}</span></li>
+            <li><strong>6</strong><span>{{ t.inline('Schlafzimmer und 6 Badezimmer', 'bedrooms and 6 bathrooms', 'спален и 6 ванных комнат', 'dormitorios y 6 baños') }}</span></li>
+            <li><strong>2</strong><span>{{ t.inline('private Pools mit Meerblick', 'private pools with sea views', 'частных бассейна с видом на море', 'piscinas privadas con vistas al mar') }}</span></li>
+            <li><strong>4</strong><span>{{ t.inline('private Parkplätze', 'private parking spaces', 'частных парковочных места', 'plazas de aparcamiento privadas') }}</span></li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <span class="compare-label">{{ t.inline('Mediterraner Rückzugsort', 'Mediterranean retreat', 'Средиземноморское уединение', 'Refugio mediterráneo') }}</span>
+          <h3>Villa MonteMare</h3>
+          <p>{{ t.inline('Mediterraner Garten mit alten Olivenbäumen und viel Privatsphäre – ideal für Familien, längere Aufenthalte und entspannte Workations.', 'A Mediterranean garden with old olive trees and abundant privacy – ideal for families, longer stays and relaxed workations.', 'Средиземноморский сад со старыми оливковыми деревьями и полной приватностью — идеальный выбор для семей, длительного отдыха и работы у моря.', 'Jardín mediterráneo con olivos centenarios y mucha privacidad, ideal para familias, estancias largas y unas vacaciones de trabajo relajadas.') }}</p>
+          <ul class="villa-feature-list">
+            <li>{{ t.inline('Bis zu 6 Gäste, exklusive Nutzung', 'Up to 6 guests, exclusive use', 'До 6 гостей, вилла полностью в вашем распоряжении', 'Hasta 6 huéspedes, uso exclusivo') }}</li>
             <li>{{ t.inline('3 Schlafzimmer, 3 Badezimmer', '3 bedrooms, 3 bathrooms', '3 спальни, 3 ванные комнаты', '3 dormitorios, 3 baños') }}</li>
             <li>{{ t.inline('Privater Pool und Meerblick', 'Private pool and sea view', 'Частный бассейн и вид на море', 'Piscina privada y vistas al mar') }}</li>
             <li>{{ t.inline('Zwei private Parkplätze', 'Two private parking spaces', 'Два частных парковочных места', 'Dos plazas de aparcamiento privadas') }}</li>
           </ul>
+          <a class="compare-link" [routerLink]="villaPath('villa-monte-mare')">{{ t.ui('ctaDiscoverVilla') }} <span aria-hidden="true">→</span></a>
         </div>
-        <div>
-          <h3>Villa MonteMare</h3>
-          <p>{{ t.inline('Mediterraner Garten mit alten Olivenbäumen, besonders natürliche Atmosphäre.', 'Mediterranean garden with old olive trees, an especially natural atmosphere.', 'Средиземноморский сад со старыми оливковыми деревьями и особенно естественной атмосферой.', 'Jardín mediterráneo con olivos centenarios y un ambiente especialmente natural.') }}</p>
-        </div>
-        <div>
+        <div class="compare-card">
+          <span class="compare-label">{{ t.inline('Moderner Panoramablick', 'Contemporary panoramic living', 'Современная вилла с панорамным видом', 'Estilo contemporáneo y vistas panorámicas') }}</span>
           <h3>Villa Lumina</h3>
-          <p>{{ t.inline('Dachterrasse, Glasfaser-Internet und separater Arbeitsbereich mit Getränkeküche.', 'Rooftop terrace, fibre internet and a separate work area with kitchenette.', 'Терраса на крыше, оптоволоконный интернет и отдельная рабочая зона с мини-кухней.', 'Azotea, internet de fibra y zona de trabajo independiente con pequeña cocina.') }}</p>
+          <p>{{ t.inline('Dachterrasse mit Panoramablick, modernes Design und höchster Komfort – ergänzt durch Glasfaser-Internet und einen separaten Arbeitsbereich.', 'A rooftop terrace with panoramic views, contemporary design and exceptional comfort – complemented by fibre internet and a separate workspace.', 'Терраса на крыше с панорамным видом, современный дизайн и высокий уровень комфорта, а также оптоволоконный интернет и отдельная рабочая зона.', 'Azotea con vistas panorámicas, diseño contemporáneo y el máximo confort, además de internet de fibra y una zona de trabajo independiente.') }}</p>
+          <ul class="villa-feature-list">
+            <li>{{ t.inline('Bis zu 6 Gäste, exklusive Nutzung', 'Up to 6 guests, exclusive use', 'До 6 гостей, вилла полностью в вашем распоряжении', 'Hasta 6 huéspedes, uso exclusivo') }}</li>
+            <li>{{ t.inline('3 Schlafzimmer, 3 Badezimmer', '3 bedrooms, 3 bathrooms', '3 спальни, 3 ванные комнаты', '3 dormitorios, 3 baños') }}</li>
+            <li>{{ t.inline('Privater Pool und Meerblick', 'Private pool and sea view', 'Частный бассейн и вид на море', 'Piscina privada y vistas al mar') }}</li>
+            <li>{{ t.inline('Zwei private Parkplätze', 'Two private parking spaces', 'Два частных парковочных места', 'Dos plazas de aparcamiento privadas') }}</li>
+          </ul>
+          <a class="compare-link" [routerLink]="villaPath('villa-lumina')">{{ t.ui('ctaDiscoverVilla') }} <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
 
     <div class="horizon-divider" aria-hidden="true"></div>
 
-    <section class="section container">
+    <section class="section container location-overview">
       <p class="eyebrow">{{ t.ui('distancesTitle') }}</p>
       <h2>{{ t.inline('Lage und Umgebung', 'Location and surroundings', 'Расположение и окрестности', 'Ubicación y alrededores') }}</h2>
+      <p class="location-lead">{{ t.inline('Ruhig an der Küste gelegen und dennoch nah an den schönsten Orten der Budva Riviera.', 'Peacefully situated on the coast, yet close to the most beautiful places along the Budva Riviera.', 'Тихое место у побережья, откуда легко добраться до самых красивых уголков Будванской ривьеры.', 'Una ubicación tranquila junto a la costa, cerca de los lugares más bellos de la Riviera de Budva.') }}</p>
+      <div class="location-highlights">
+        <article>
+          <span class="location-icon" aria-hidden="true">✦</span>
+          <h3>{{ t.inline('Küste & Orte', 'Coast & towns', 'Побережье и города', 'Costa y localidades') }}</h3>
+          <p>{{ t.inline('Malerische Buchten und Strände liegen ebenso in der Nähe wie Budva, Sveti Stefan und Petrovac.', 'Picturesque bays and beaches are close by, as are Budva, Sveti Stefan and Petrovac.', 'Поблизости находятся живописные бухты и пляжи, а также Будва, Свети-Стефан и Петровац.', 'Muy cerca encontrará calas y playas pintorescas, además de Budva, Sveti Stefan y Petrovac.') }}</p>
+        </article>
+        <article>
+          <span class="location-icon" aria-hidden="true">⌂</span>
+          <h3>{{ t.inline('Alles für den Aufenthalt', 'Everyday essentials nearby', 'Всё необходимое рядом', 'Todo lo necesario cerca') }}</h3>
+          <p>{{ t.inline('Ein großer HDL-Supermarkt ist in wenigen Gehminuten erreichbar – ideal für frische Lebensmittel und alles, was Sie täglich benötigen.', 'A large HDL supermarket is only a few minutes’ walk away – ideal for fresh groceries and everyday essentials.', 'Большой супермаркет HDL находится всего в нескольких минутах ходьбы — здесь есть свежие продукты и всё необходимое на каждый день.', 'Un gran supermercado HDL se encuentra a pocos minutos a pie, perfecto para comprar alimentos frescos y todo lo necesario durante la estancia.') }}</p>
+        </article>
+        <article>
+          <span class="location-icon" aria-hidden="true">≈</span>
+          <h3>{{ t.inline('Drobni Pijesak', 'Drobni Pijesak', 'Дробни-Пиесак', 'Drobni Pijesak') }}</h3>
+          <p>{{ t.inline('Der Strand mit goldenem Sand und kristallklarem Wasser liegt etwa 3 Autominuten oder 10 Gehminuten entfernt. Zwei Parkplätze pro Villa stehen kostenfrei zur Verfügung.', 'The beach with golden sand and crystal-clear water is around 3 minutes away by car or 10 minutes on foot. Two parking spaces per villa are included.', 'Пляж с золотистым песком и кристально чистой водой находится примерно в 3 минутах на автомобиле или в 10 минутах пешком. Для каждой виллы предусмотрено два бесплатных парковочных места.', 'La playa de arena dorada y agua cristalina está a unos 3 minutos en coche o 10 minutos a pie. Cada villa incluye dos plazas de aparcamiento gratuitas.') }}</p>
+        </article>
+      </div>
       <ul class="distances">
         @for (d of distances; track d.label.de) {
-          <li><span>{{ t.t(d.label) }}</span><strong>{{ d.value }}</strong></li>
+          <li><span>{{ t.t(d.label) }}</span><strong>{{ t.t(d.value) }}</strong></li>
         }
       </ul>
       <a class="btn btn-quiet" [routerLink]="locationPath()">
@@ -275,9 +312,32 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     .home-gallery button:nth-child(2) { grid-column: 2 / 4; }
     .gallery-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: var(--space-3); }
 
-    .compare-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: var(--space-4); margin-top: var(--space-3); }
-    .compare-grid ul { padding-left: 1.1rem; }
-    .compare-grid li { margin-bottom: 0.4rem; }
+    .compare-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: clamp(1rem, 2.5vw, 2rem); margin-top: var(--space-3); align-items: stretch; }
+    .compare-card { display: flex; flex-direction: column; min-width: 0; padding: clamp(1.4rem, 3vw, 2.25rem); border: 1px solid color-mix(in srgb, var(--c-sand) 74%, transparent); border-radius: var(--radius-lg); background: var(--c-ivory); box-shadow: var(--shadow-soft); }
+    .compare-card-shared { background: var(--c-adria); border-color: var(--c-adria); color: rgba(255,255,255,.78); box-shadow: var(--shadow-lifted); }
+    .compare-card h3 { font-size: clamp(1.65rem, 2.5vw, 2.2rem); margin: .45rem 0 1rem; }
+    .compare-card-shared h3 { color: var(--c-limestone); }
+    .compare-card p { line-height: 1.7; }
+    .compare-label { color: var(--c-olive); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+    .compare-card-shared .compare-label { color: var(--c-champagne); }
+    .compare-facts, .villa-feature-list { list-style: none; padding: 0; margin: auto 0 0; }
+    .compare-facts { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; padding-top: 1.25rem; }
+    .compare-facts li { display: flex; flex-direction: column; gap: .15rem; padding-top: .75rem; border-top: 1px solid rgba(255,255,255,.16); }
+    .compare-facts strong { color: var(--c-limestone); font-family: var(--font-display); font-size: 1.65rem; font-weight: 500; }
+    .compare-facts span { font-size: .78rem; line-height: 1.45; }
+    .villa-feature-list { padding-top: 1rem; }
+    .villa-feature-list li { position: relative; padding: .65rem 0 .65rem 1.1rem; border-top: 1px solid color-mix(in srgb, var(--c-sand) 65%, transparent); }
+    .villa-feature-list li::before { content: '·'; position: absolute; left: 0; color: var(--c-terracotta); font-weight: 700; }
+    .compare-link { display: inline-flex; align-items: center; gap: .45rem; margin-top: 1.25rem; color: var(--c-adria); font-size: .85rem; font-weight: 600; text-decoration: none; }
+    .compare-link span { transition: transform 180ms ease; }
+    .compare-link:hover span { transform: translateX(4px); }
+
+    .location-lead { max-width: 58ch; color: var(--c-olive); font-size: clamp(1.05rem, 1.6vw, 1.25rem); }
+    .location-highlights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); margin: var(--space-3) 0; }
+    .location-highlights article { padding: clamp(1.25rem, 2.5vw, 1.8rem); border-top: 1px solid var(--c-sand); background: color-mix(in srgb, var(--c-ivory) 64%, transparent); }
+    .location-highlights h3 { margin: .75rem 0 .5rem; font-size: 1.35rem; }
+    .location-highlights p { margin: 0; font-size: .92rem; line-height: 1.65; }
+    .location-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--c-champagne); border-radius: 50%; color: var(--c-terracotta); font-family: var(--font-display); }
 
     .distances { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.6rem 2rem; max-width: 640px; margin: var(--space-3) 0 var(--space-3); }
     .distances li { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--c-sand); padding-bottom: 0.35rem; }
@@ -297,6 +357,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
 
     @media (max-width: 900px) {
       .villa-grid, .compare-grid, .guides-grid { grid-template-columns: minmax(0, 1fr); }
+      .location-highlights { grid-template-columns: 1fr; }
       .distances { grid-template-columns: 1fr; }
       .home-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(2, 190px); }
       .home-gallery button:first-child, .home-gallery button:nth-child(2) { grid-column: auto; grid-row: auto; }
@@ -315,6 +376,8 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
       .home-gallery { grid-template-columns: 1fr; grid-template-rows: none; gap: .65rem; }
       .home-gallery button { height: auto; aspect-ratio: 4 / 3; }
       .compare-grid { gap: 1.75rem; }
+      .compare-card { padding: 1.35rem; }
+      .compare-facts { grid-template-columns: 1fr 1fr; }
       .distances li { gap: 1rem; align-items: baseline; }
       .distances strong { white-space: nowrap; }
     }
