@@ -79,7 +79,7 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
 export const DISTANCES: DistanceItem[] = [
   {
     label: { de: 'Drobni Pijesak Beach', en: 'Drobni Pijesak Beach', ru: 'Пляж Дробни Пиесак', es: 'Playa Drobni Pijesak' },
-    value: { de: '≈ 3 Min. mit dem Auto', en: '≈ 3 min by car', ru: '≈ 3 мин. на автомобиле', es: '≈ 3 min en coche' },
+    value: { de: 'ca. 3 Autominuten', en: 'approx. 3 min by car', ru: 'около 3 мин. на автомобиле', es: 'aprox. 3 min en coche' },
   },
   {
     label: { de: 'Sveti Stefan', en: 'Sveti Stefan', ru: 'Свети-Стефан', es: 'Sveti Stefan' },
@@ -157,10 +157,10 @@ export const VILLAS: Villa[] = [
       { de: 'Großzügige Sonnenterrasse', en: 'Generous sun terrace', ru: 'Просторная солнечная терраса', es: 'Amplia terraza-solárium' },
       { de: 'Voll ausgestattete Küche', en: 'Fully equipped kitchen', ru: 'Полностью оборудованная кухня', es: 'Cocina totalmente equipada' },
       { de: 'Separater Arbeitsbereich mit Schreibtisch und Getränkeküche', en: 'Separate work area with desk', ru: 'Отдельная рабочая зона с письменным столом', es: 'Zona de trabajo independiente con escritorio' },
-      { de: 'Klimaanlage', en: '', ru: '', es: '' },
-      { de: 'Fußbodenheizung', en: '', ru: '', es: '' },
+      { de: 'Klimaanlage', en: 'Air conditioning', ru: 'Кондиционер', es: 'Aire acondicionado' },
+      { de: 'Fußbodenheizung', en: 'Underfloor heating', ru: 'Тёплый пол', es: 'Calefacción por suelo radiante' },
       { de: 'WLAN', en: 'WiFi', ru: 'Wi‑Fi', es: 'Wi‑Fi' },
-      { de: 'Waschmaschine mit Trockenfunktion', en: 'Washing machine in a separate utility room', ru: 'Стиральная машина в отдельной прачечной', es: 'Lavadora en un lavadero independiente' },
+      { de: 'Waschmaschine mit Trockenfunktion', en: 'Washer-dryer', ru: 'Стирально-сушильная машина', es: 'Lavadora-secadora' },
       { de: 'Zwei private Parkplätze', en: 'Two private parking spaces', ru: 'Два частных парковочных места', es: 'Dos plazas de aparcamiento privadas' },
       { de: 'Exklusive Nutzung der gesamten Villa', en: 'Exclusive use of the entire villa', ru: 'Эксклюзивное пользование всей виллой', es: 'Uso exclusivo de toda la villa' },
     ],
@@ -212,10 +212,10 @@ export const VILLAS: Villa[] = [
       es: 'Villa MonteMare Montenegro | Piscina privada y vistas al mar',
     },
     metaDescription: {
-      de: 'Private Luxusvilla in Reževići bei Budva: 3 Schlafzimmer, eigener Pool, Olivengarten und Meerblick für bis zu 6 Gäste. Saisonpreise ab 350 € pro Nacht.',
-      en: 'Private luxury villa in Reževići near Budva: 3 bedrooms, private pool, olive garden and sea views for up to 6 guests. Seasonal rates from €350 per night.',
-      ru: 'Частная вилла в Режевичи рядом с Будвой: 3 спальни, бассейн, оливковый сад и вид на море для 6 гостей. Сезонные цены от 350 € за ночь.',
-      es: 'Villa privada en Reževići, cerca de Budva: 3 dormitorios, piscina, olivar y vistas al mar para 6 huéspedes. Tarifas de temporada desde 350 € por noche.',
+      de: 'Private Luxusvilla in Reževići bei Budva: 3 Schlafzimmer, eigener Pool, Olivengarten und Meerblick für bis zu 6 Gäste. Saisonpreise ab 378 € pro Nacht.',
+      en: 'Private luxury villa in Reževići near Budva: 3 bedrooms, private pool, olive garden and sea views for up to 6 guests. Seasonal rates from €378 per night.',
+      ru: 'Частная вилла в Режевичи рядом с Будвой: 3 спальни, бассейн, оливковый сад и вид на море для 6 гостей. Сезонные цены от 378 € за ночь.',
+      es: 'Villa privada en Reževići, cerca de Budva: 3 dormitorios, piscina, olivar y vistas al mar para 6 huéspedes. Tarifas de temporada desde 378 € por noche.',
     },
   },
   {
@@ -326,10 +326,10 @@ export const VILLAS: Villa[] = [
       es: 'Villa Lumina Montenegro | Piscina, azotea y vistas al mar',
     },
     metaDescription: {
-      de: 'Luxusvilla in Reževići bei Budva für 6 Gäste: privater Pool, Dachterrasse, Glasfaser-Internet und Panoramablick. Saisonpreise ab 350 € pro Nacht.',
-      en: 'Luxury villa in Reževići near Budva for 6 guests: private pool, rooftop terrace, fibre internet and panoramic views. Seasonal rates from €350 per night.',
-      ru: 'Вилла в Режевичи рядом с Будвой для 6 гостей: бассейн, терраса на крыше, быстрый интернет и панорамный вид. Сезонные цены от 350 € за ночь.',
-      es: 'Villa de lujo en Reževići, cerca de Budva, para 6 huéspedes: piscina, azotea, fibra y vistas panorámicas. Tarifas de temporada desde 350 € por noche.',
+      de: 'Luxusvilla in Reževići bei Budva für 6 Gäste: privater Pool, Dachterrasse, Glasfaser-Internet und Panoramablick. Saisonpreise ab 378 € pro Nacht.',
+      en: 'Luxury villa in Reževići near Budva for 6 guests: private pool, rooftop terrace, fibre internet and panoramic views. Seasonal rates from €378 per night.',
+      ru: 'Вилла в Режевичи рядом с Будвой для 6 гостей: бассейн, терраса на крыше, быстрый интернет и панорамный вид. Сезонные цены от 378 € за ночь.',
+      es: 'Villa de lujo en Reževići, cerca de Budva, para 6 huéspedes: piscina, azotea, fibra y vistas panorámicas. Tarifas de temporada desde 378 € por noche.',
     },
   },
 ];

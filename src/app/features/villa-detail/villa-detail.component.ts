@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -48,7 +48,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
           <a [routerLink]="[]" fragment="villa-galerie">{{ t.inline('Galerie', 'Gallery', 'Галерея', 'Galería') }}</a>
           <a [routerLink]="[]" fragment="villa-ausstattung">{{ t.inline('Ausstattung', 'Amenities', 'Удобства', 'Comodidades') }}</a>
           <a [routerLink]="[]" fragment="villa-lage">{{ t.inline('Lage', 'Location', 'Расположение', 'Ubicación') }}</a>
-          <a class="section-nav-book" [routerLink]="[]" fragment="verfuegbarkeit" (click)="navigateToBooking($event)">{{ t.inline('Aufenthalt planen', 'Plan your stay', 'Спланировать отдых', 'Planificar estancia') }}</a>
+          <a class="section-nav-book" href="#verfuegbarkeit" (click)="openStayPlanner($event)">{{ t.inline('Aufenthalt planen', 'Plan your stay', 'Спланировать отдых', 'Planificar estancia') }}</a>
         </div>
       </nav>
 
@@ -60,7 +60,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
         </div>
         <div class="story-copy">
           <p class="eyebrow">{{ t.inline('Privat wohnen. Weit blicken.', 'Private living. Endless views.', 'Уединение. Бескрайний вид.', 'Privacidad. Vistas infinitas.') }}</p>
-          <h2>{{ t.inline('Die Villa', 'The villa', 'Вилла', 'La villa') }}</h2>
+          <h2>{{ t.inline('Ihr privater Rückzugsort', 'Your private retreat', 'Ваше уединённое место', 'Tu refugio privado') }}</h2>
           <p class="story-lead">{{ t.t(villa.intro) }}</p>
           @for (paragraph of villa.description; track $index) {
             <p>{{ t.t(paragraph) }}</p>
@@ -233,7 +233,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
 
       </section>
       <section class="section container villa-booking-section">
-        <app-booking-widget [preselectedVillaSlug]="villa.slug" />
+        <app-booking-widget #bookingWidget [preselectedVillaSlug]="villa.slug" />
       </section>
       </div>
 
@@ -428,6 +428,8 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
   `],
 })
 export class VillaDetailComponent implements OnInit {
+  @ViewChild('bookingWidget') private bookingWidget?: BookingWidgetComponent;
+
   protected readonly t = inject(TranslationService);
   private readonly seo = inject(SeoService);
   private readonly structuredData = inject(StructuredDataService);
@@ -494,6 +496,11 @@ export class VillaDetailComponent implements OnInit {
     void this.router.navigate([], { relativeTo: this.route, fragment: 'verfuegbarkeit' }).then(() => {
       this.scrollToBooking();
     });
+  }
+
+  protected openStayPlanner(event: Event): void {
+    event.preventDefault();
+    this.bookingWidget?.openPlanner();
   }
 
   private scrollToBooking(): void {

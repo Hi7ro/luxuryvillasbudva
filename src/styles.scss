@@ -245,3 +245,43 @@ button:disabled {
   .btn { width: 100%; justify-content: center; text-align: center; }
   .horizon-divider { margin-block: 2.5rem; }
 }
+
+/* Booking inquiry: wide, compact first step so dates and controls stay visible together. */
+app-booking-widget .inquiry-drawer > h2 {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  line-height: 1;
+}
+app-booking-widget .inquiry-drawer > h3 {
+  margin-bottom: .9rem;
+  font-size: clamp(1.55rem, 2.7vw, 2.15rem);
+}
+app-booking-widget .inquiry-drawer > .eyebrow { margin-bottom: .45rem; }
+app-booking-widget .stay-step-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, .72fr) minmax(430px, 1.28fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+  min-height: 0;
+}
+app-booking-widget .stay-step-layout.flexible-layout { grid-template-columns: minmax(280px, 430px); }
+app-booking-widget .stay-step-controls { display: flex; flex-direction: column; min-width: 0; }
+
+@media (max-width: 780px) {
+  app-booking-widget .stay-step-layout,
+  app-booking-widget .stay-step-layout.flexible-layout { grid-template-columns: 1fr; }
+  app-booking-widget .inquiry-drawer { width: min(100%, 560px); }
+  app-booking-widget .stay-step-controls { display: contents; }
+  app-booking-widget .drawer-villa { order: 1; }
+  app-booking-widget .flexible-choice { order: 2; }
+  app-booking-widget .drawer-calendar { order: 3; }
+  app-booking-widget .guest-control { order: 4; }
+  app-booking-widget .status-error { order: 5; }
+  app-booking-widget .drawer-primary { order: 6; }
+}
+
+@media (max-width: 600px) {
+  app-booking-widget .inquiry-drawer > h2 { font-size: 2.35rem; }
+  app-booking-widget .inquiry-drawer > h3 { margin-bottom: .65rem; font-size: 1.45rem; }
+  app-booking-widget .drawer-progress { margin: .6rem 0 .75rem; }
+}

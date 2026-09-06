@@ -59,12 +59,12 @@ interface PriceLine { rate: number; nights: number; total: number; }
                   </div>
                 </div>
                 <div class="long-stay-rate">
-                  <strong>2.500 €</strong>
+                  <strong>{{ t.inline('ab 2.500 €', 'from €2,500', 'от 2 500 €', 'desde 2.500 €') }}</strong>
                   <span>{{ t.inline('pro Monat', 'per month', 'в месяц', 'al mes') }}</span>
                 </div>
                 <ul>
                   <li>{{ t.inline('Poolreinigungsservice', 'Pool cleaning service', 'Обслуживание и очистка бассейна', 'Servicio de limpieza de piscina') }}</li>
-                  <li>{{ t.inline('Täglicher Reinigungsservice', 'Daily housekeeping', 'Ежедневная уборка', 'Servicio de limpieza diario') }}</li>
+                  <li>{{ t.inline('Reinigungsservice', 'Housekeeping service', 'Услуги по уборке', 'Servicio de limpieza') }}</li>
                   <li>{{ t.inline('Gärtnerservice', 'Garden maintenance', 'Уход за садом', 'Servicio de jardinería') }}</li>
                 </ul>
                 <p>{{ t.inline('Für längere Aufenthalte auf Anfrage individuell planbar.', 'Individually arranged on request for longer stays.', 'Для длительного проживания услуги согласовываются индивидуально по запросу.', 'Disponibles bajo petición y organizados a medida para estancias largas.') }}</p>
@@ -120,32 +120,36 @@ interface PriceLine { rate: number; nights: number; total: number; }
           </div>
         } @else if (drawerStep() === 1) {
           <h3>{{ t.inline('Wann reisen Sie an?', 'When are you arriving?', 'Когда вы приезжаете?', '¿Cuándo llegas?') }}</h3>
-          <div class="field drawer-villa">
-            <label for="drawerVilla">{{ t.ui('formVilla') }}</label>
-            <select id="drawerVilla" [formControl]="form.controls.villaSlug" (change)="villaChanged()">
-              <option value="villa-lumina">Villa Lumina</option>
-              <option value="villa-monte-mare">Villa MonteMare</option>
-            </select>
-          </div>
-          <label class="flexible-choice">
-            <input type="checkbox" [formControl]="form.controls.flexibleDates" />
-            <span>{{ t.inline('Ich bin flexibel – noch keine genauen Termine', 'I am flexible – no exact dates yet', 'Я гибок(-ка) — точных дат пока нет', 'Soy flexible: todavía no tengo fechas exactas') }}</span>
-          </label>
-          @if (!form.controls.flexibleDates.value) {
-            <div class="drawer-calendar">
-              <app-availability-calendar [villaSlug]="form.controls.villaSlug.value" [initialCheckIn]="form.controls.checkIn.value" [initialCheckOut]="form.controls.checkOut.value" [embedded]="true" (rangeChange)="setDateRange($event)" />
+          <div class="stay-step-layout" [class.flexible-layout]="form.controls.flexibleDates.value">
+            <div class="stay-step-controls">
+              <div class="field drawer-villa">
+                <label for="drawerVilla">{{ t.ui('formVilla') }}</label>
+                <select id="drawerVilla" [formControl]="form.controls.villaSlug" (change)="villaChanged()">
+                  <option value="villa-lumina">Villa Lumina</option>
+                  <option value="villa-monte-mare">Villa MonteMare</option>
+                </select>
+              </div>
+              <label class="flexible-choice">
+                <input type="checkbox" [formControl]="form.controls.flexibleDates" />
+                <span>{{ t.inline('Ich bin flexibel – noch keine genauen Termine', 'I am flexible – no exact dates yet', 'Я гибок(-ка) — точных дат пока нет', 'Soy flexible: todavía no tengo fechas exactas') }}</span>
+              </label>
+              <div class="guest-control">
+                <span>{{ t.ui('formGuests') }}</span>
+                <div>
+                  <button type="button" (click)="changeGuests(-1)" [disabled]="form.controls.guests.value <= 1">−</button>
+                  <strong>{{ form.controls.guests.value }}</strong>
+                  <button type="button" (click)="changeGuests(1)" [disabled]="form.controls.guests.value >= 6">+</button>
+                </div>
+              </div>
+              @if (state() === 'error') { <p class="status-error" role="alert">{{ errorMessage() }}</p> }
+              <button class="btn drawer-primary" type="button" (click)="continueFromStay()">{{ t.inline('Weiter', 'Continue', 'Продолжить', 'Continuar') }} →</button>
             </div>
-          }
-          <div class="guest-control">
-            <span>{{ t.ui('formGuests') }}</span>
-            <div>
-              <button type="button" (click)="changeGuests(-1)" [disabled]="form.controls.guests.value <= 1">−</button>
-              <strong>{{ form.controls.guests.value }}</strong>
-              <button type="button" (click)="changeGuests(1)" [disabled]="form.controls.guests.value >= 6">+</button>
-            </div>
+            @if (!form.controls.flexibleDates.value) {
+              <div class="drawer-calendar">
+                <app-availability-calendar [villaSlug]="form.controls.villaSlug.value" [initialCheckIn]="form.controls.checkIn.value" [initialCheckOut]="form.controls.checkOut.value" [embedded]="true" [compact]="true" (rangeChange)="setDateRange($event)" />
+              </div>
+            }
           </div>
-          @if (state() === 'error') { <p class="status-error" role="alert">{{ errorMessage() }}</p> }
-          <button class="btn drawer-primary" type="button" (click)="continueFromStay()">{{ t.inline('Weiter', 'Continue', 'Продолжить', 'Continuar') }} →</button>
         } @else if (drawerStep() === 2) {
           <button class="drawer-back" type="button" (click)="goToStep(1)">← {{ t.inline('Zurück', 'Back', 'Назад', 'Atrás') }}</button>
           <h3>{{ t.inline('Was führt Sie zu uns nach Budva?', 'What brings you to Budva?', 'Что привело вас в Будву?', '¿Qué te trae a Budva?') }}</h3>
@@ -246,21 +250,21 @@ interface PriceLine { rate: number; nights: number; total: number; }
     .price-whatsapp { width: 100%; justify-content: center; margin-top: .75rem; border-color: rgba(255,255,255,.25); color: white; }
     .change-dates { align-self: center; border: 0; background: transparent; color: rgba(255,255,255,.48); margin-top: 1rem; cursor: pointer; }
     .drawer-backdrop { position: fixed; inset: 0; z-index: 199; border: 0; background: rgba(9,18,25,.62); backdrop-filter: blur(3px); }
-    .inquiry-drawer { position: fixed; z-index: 200; top: 0; right: 0; width: min(100%, 520px); height: 100dvh; overflow-y: auto; display: flex; flex-direction: column; padding: clamp(2rem, 5vw, 3.5rem); background: #091c2d; color: rgba(255,255,255,.78); box-shadow: -30px 0 80px rgba(0,0,0,.32); animation: drawer-in 320ms cubic-bezier(.2,.7,.2,1); }
+    .inquiry-drawer { position: fixed; z-index: 200; top: 0; right: 0; width: min(100%, 960px); height: 100dvh; overflow-y: auto; display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 2.75rem); background: #091c2d; color: rgba(255,255,255,.78); box-shadow: -30px 0 80px rgba(0,0,0,.32); animation: drawer-in 320ms cubic-bezier(.2,.7,.2,1); }
     @keyframes drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
     .inquiry-drawer h2, .inquiry-drawer h3 { color: white; }
     .inquiry-drawer .eyebrow { color: var(--c-champagne); }
     .drawer-close { position: absolute; right: 1.25rem; top: 1.25rem; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: transparent; color: white; font-size: 1.6rem; cursor: pointer; }
-    .drawer-progress { display: flex; gap: .45rem; margin: 1.25rem 0; }
+    .drawer-progress { display: flex; gap: .45rem; margin: .85rem 0 1rem; }
     .drawer-progress span { width: 24px; height: 3px; background: rgba(255,255,255,.16); }
     .drawer-progress span.active { background: var(--c-champagne); }
     .drawer-summary { padding: .85rem 1rem; margin-bottom: 1.5rem; border-left: 3px solid var(--c-champagne); border-radius: 5px; background: rgba(255,255,255,.05); }
-    .drawer-villa { margin-bottom: 1rem; }
+    .drawer-villa { margin-bottom: .75rem; }
     .drawer-villa select { width: 100%; min-height: 48px; border: 1px solid rgba(255,255,255,.25); border-radius: 5px; padding: .7rem .8rem; background: rgba(255,255,255,.06); color: white; font: inherit; }
     .drawer-villa option { color: var(--c-anthracite); }
-    .flexible-choice { display: flex; gap: .65rem; align-items: flex-start; padding: .9rem 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,.16); cursor: pointer; }
+    .flexible-choice { display: flex; gap: .65rem; align-items: flex-start; padding: .8rem .9rem; margin-bottom: .75rem; border: 1px solid rgba(255,255,255,.16); cursor: pointer; }
     .flexible-choice input { width: 18px; height: 18px; margin-top: .15rem; accent-color: var(--c-champagne); }
-    .drawer-calendar { margin-bottom: 1rem; padding: .75rem; border-radius: 8px; background: white; color: var(--c-anthracite); }
+    .drawer-calendar { min-width: 0; padding: .55rem; border-radius: 8px; background: white; color: var(--c-anthracite); }
     .drawer-dates { display: grid; grid-template-columns: 1fr 1fr; margin: 1.5rem 0; border: 1px solid rgba(255,255,255,.16); }
     .drawer-dates span { padding: 1rem; color: white; }
     .drawer-dates span + span { border-left: 1px solid rgba(255,255,255,.16); }
@@ -268,7 +272,7 @@ interface PriceLine { rate: number; nights: number; total: number; }
     .guest-control { display: flex; justify-content: space-between; align-items: center; padding: .8rem 1rem; border: 1px solid rgba(255,255,255,.16); }
     .guest-control div { display: flex; align-items: center; gap: 1rem; }
     .guest-control button { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: transparent; color: white; font-size: 1.2rem; cursor: pointer; }
-    .drawer-primary { width: 100%; justify-content: center; margin-top: 1.5rem; background: #2d8397; color: white; }
+    .drawer-primary { width: 100%; justify-content: center; margin-top: 1rem; background: #2d8397; color: white; }
     .drawer-back { border: 0; background: transparent; color: var(--c-champagne); padding: 0; cursor: pointer; }
     .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: 1.5rem 0; }
     .reason-grid button, .contact-choice button { min-height: 52px; padding: .75rem; border: 1px solid rgba(255,255,255,.2); border-radius: 5px; background: rgba(255,255,255,.04); color: white; font: inherit; cursor: pointer; transition: border-color 180ms ease, background 180ms ease; }
@@ -294,7 +298,7 @@ interface PriceLine { rate: number; nights: number; total: number; }
     .status-error { color: #ffb19d; }
     .drawer-success { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding-top: 2rem; }
     .drawer-success > span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--c-champagne); color: var(--c-adria); font-size: 1.4rem; }
-    .drawer-contact { display: flex; align-items: center; gap: .85rem; margin-top: auto; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.72); }
+    .drawer-contact { display: flex; align-items: center; gap: .85rem; margin-top: auto; padding-top: .8rem; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.72); }
     .contact-avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(145deg, var(--c-champagne), var(--c-terracotta)); color: #091c2d; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; box-shadow: 0 0 0 3px rgba(255,255,255,.06); }
     .drawer-contact > span:last-child { display: flex; flex-direction: column; line-height: 1.35; }
     .drawer-contact strong { color: white; font-size: .86rem; font-weight: 500; }
@@ -305,7 +309,7 @@ interface PriceLine { rate: number; nights: number; total: number; }
       .calendar-panel, .included-panel, .price-panel { border-radius: 10px; }
       .included-list { columns: 1; }
       .field-row { flex-direction: column; }
-      .inquiry-drawer { padding: 4.5rem 1.25rem 2rem; }
+      .inquiry-drawer { padding: 3.8rem 1rem 1.25rem; }
       .date-overview { gap: .55rem; }
       .date-overview strong { font-size: 1.05rem; }
       .reason-grid { grid-template-columns: 1fr; }
@@ -395,6 +399,7 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
     this.form.patchValue(range);
     if (range.checkOut) this.tracking.track('booking_dates_selected', { villa: this.form.controls.villaSlug.value, nights: this.nightCount() });
   }
+  public openPlanner(): void { this.openInquiry(); }
   protected clearDates(): void { this.calendar?.resetSelection(); }
   protected villaChanged(): void {
     this.form.patchValue({ checkIn: '', checkOut: '' });

@@ -25,9 +25,14 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
+  private resetHomepageAfterReload = false;
+  private initialNavigationHandled = false;
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
+
+    this.resetHomepageAfterReload = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type === 'reload';
+    if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
 
     this.router.events
       .pipe(
@@ -35,13 +40,39 @@ export class AppComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event) => {
-        const fragment = this.router.parseUrl(event.urlAfterRedirects).fragment;
-        this.scrollToFragment(fragment);
+        this.handleNavigation(event.urlAfterRedirects);
       });
 
-    // A fragment can already be present on the first hydrated page load. In
-    // that case the router event may fire before the destination section exists.
-    window.setTimeout(() => this.scrollToFragment(this.router.parseUrl(this.router.url).fragment), 250);
+    // Hydration can finish after the first router event. This fallback handles
+    // both an initial fragment and a browser-restored scroll position.
+    window.setTimeout(() => this.handleNavigation(this.router.url), 250);
+  }
+
+  private handleNavigation(url: string): void {
+    const urlTree = this.router.parseUrl(url);
+    if (!this.initialNavigationHandled) {
+      this.initialNavigationHandled = true;
+      if (this.resetHomepageAfterReload && this.isHomepage(urlTree)) {
+        const locale = urlTree.root.children['primary']?.segments[0]?.path ?? 'de';
+        if (urlTree.fragment) {
+          void this.router.navigateByUrl(`/${locale}`, { replaceUrl: true }).then(() => this.scrollToTop());
+        } else {
+          this.scrollToTop();
+        }
+        return;
+      }
+    }
+
+    this.scrollToFragment(urlTree.fragment);
+  }
+
+  private isHomepage(urlTree: ReturnType<Router['parseUrl']>): boolean {
+    const segments = urlTree.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
+    return segments.length === 1 && ['de', 'en', 'ru', 'es'].includes(segments[0]);
+  }
+
+  private scrollToTop(): void {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' })));
   }
 
   private scrollToFragment(fragment: string | null): void {

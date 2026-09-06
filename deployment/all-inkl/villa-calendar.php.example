@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+// Copy this file to villa-calendar.php, insert the private iCal export links,
+// and upload it outside the public domain directory when possible.
+return [
+    'villa-lumina' => [
+        'PASTE_PRIVATE_AIRBNB_ICAL_URL_FOR_LUMINA_HERE',
+        // 'PASTE_PRIVATE_BOOKING_ICAL_URL_FOR_LUMINA_HERE',
+    ],
+    'villa-monte-mare' => [
+        'PASTE_PRIVATE_AIRBNB_ICAL_URL_FOR_MONTE_MARE_HERE',
+        // 'PASTE_PRIVATE_BOOKING_ICAL_URL_FOR_MONTE_MARE_HERE',
+    ],
+];
+

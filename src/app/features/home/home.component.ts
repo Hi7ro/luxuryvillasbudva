@@ -7,11 +7,12 @@ import { VILLAS, DISTANCES, GUIDE_ARTICLES } from '../../core/data/content.data'
 import { Locale } from '../../core/models/villa.model';
 import { BookingWidgetComponent } from '../../shared/booking-widget/booking-widget.component';
 import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightbox.component';
+import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, BookingWidgetComponent, ImageLightboxComponent],
+  imports: [RouterLink, BookingWidgetComponent, ImageLightboxComponent, GuestReviewsComponent],
   template: `
     <section class="hero">
       <div class="hero-slideshow">
@@ -117,6 +118,12 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
         <a class="btn btn-quiet" [routerLink]="villaPath('villa-monte-mare')">Villa MonteMare</a>
         <a class="btn btn-quiet" [routerLink]="villaPath('villa-lumina')">Villa Lumina</a>
       </div>
+    </section>
+
+    <div class="horizon-divider" aria-hidden="true"></div>
+
+    <section class="section container">
+      <app-guest-reviews />
     </section>
 
     <div class="horizon-divider" aria-hidden="true"></div>

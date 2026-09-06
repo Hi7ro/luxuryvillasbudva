@@ -10,7 +10,7 @@ interface CalendarDay { date: Date; iso: string; day: number; rate: number; outs
   selector: 'app-availability-calendar',
   standalone: true,
   template: `
-    <div class="calendar" [class.embedded]="embedded" [attr.aria-label]="t.inline('Verfügbarkeitskalender', 'Availability calendar', 'Календарь доступности', 'Calendario de disponibilidad')">
+    <div class="calendar" [class.embedded]="embedded" [class.compact]="compact" [attr.aria-label]="t.inline('Verfügbarkeitskalender', 'Availability calendar', 'Календарь доступности', 'Calendario de disponibilidad')">
       <div class="calendar-head">
         <div>
           <strong>{{ t.inline('Reisedaten auswählen', 'Select travel dates', 'Выберите даты', 'Selecciona las fechas') }}</strong>
@@ -63,7 +63,7 @@ interface CalendarDay { date: Date; iso: string; day: number; rate: number; outs
         <p class="hint">{{ t.inline('Anreise wählen, danach Abreise wählen.', 'Choose check-in, then check-out.', 'Сначала выберите заезд, затем выезд.', 'Elige la llegada y después la salida.') }}</p>
         <p class="legend"><span aria-hidden="true"></span>{{ t.inline('Belegt', 'Booked', 'Занято', 'Ocupado') }}</p>
       </div>
-      <p class="season-note">{{ t.inline('Preis pro Nacht · Nov.–Apr. 350 € · Mai & Okt. 400 € · Jun. & Sep. 450 € · Jul.–Aug. 500 €', 'Price per night · Nov–Apr €350 · May & Oct €400 · Jun & Sep €450 · Jul–Aug €500', 'Цена за ночь · нояб.–апр. 350 € · май и окт. 400 € · июнь и сент. 450 € · июль–авг. 500 €', 'Precio por noche · nov.–abr. 350 € · mayo y oct. 400 € · jun. y sept. 450 € · jul.–ago. 500 €') }}</p>
+      <p class="season-note">{{ t.inline('Preis pro Nacht · Nov.–Apr. 378 € · Mai & Okt. 431 € · Jun. & Sep. 485 € · Jul.–Aug. 539 €', 'Price per night · Nov–Apr €378 · May & Oct €431 · Jun & Sep €485 · Jul–Aug €539', 'Цена за ночь · нояб.–апр. 378 € · май и окт. 431 € · июнь и сент. 485 € · июль–авг. 539 €', 'Precio por noche · nov.–abr. 378 € · mayo y oct. 431 € · jun. y sept. 485 € · jul.–ago. 539 €') }}</p>
     </div>
   `,
   styles: [`
@@ -98,6 +98,16 @@ interface CalendarDay { date: Date; iso: string; day: number; rate: number; outs
     .sync-status { padding: .6rem .75rem; margin-bottom: .8rem; border-radius: 7px; background: var(--c-limestone); }
     .sync-error { color: var(--c-terracotta); }
     .season-note { max-width: none; margin: .8rem 0 0; padding-top: .8rem; border-top: 1px solid color-mix(in srgb, var(--c-sand) 55%, transparent); color: var(--c-olive); font-size: .7rem; line-height: 1.45; }
+    .calendar.compact { padding: .45rem 0 0; }
+    .compact .calendar-head { margin-bottom: .45rem; }
+    .compact .calendar-head strong { font-size: 1.05rem; }
+    .compact .month-controls button { width: 38px; height: 38px; }
+    .compact .sync-status { padding: .45rem .6rem; margin-bottom: .45rem; font-size: .72rem; }
+    .compact .month h3 { margin-bottom: .35rem; }
+    .compact .weekdays span { padding-bottom: .2rem; }
+    .compact .days button { min-height: 35px; aspect-ratio: auto; }
+    .compact .calendar-footer { margin-top: .45rem; }
+    .compact .season-note { margin-top: .45rem; padding-top: .45rem; }
     @media (max-width: 720px) {
       .calendar-head { align-items: flex-start; }
       .calendar-head > div:first-child { min-width: 0; }
@@ -115,6 +125,7 @@ interface CalendarDay { date: Date; iso: string; day: number; rate: number; outs
 export class AvailabilityCalendarComponent implements OnChanges {
   @Input({ required: true }) villaSlug: VillaSlug = 'villa-monte-mare';
   @Input() embedded = false;
+  @Input() compact = false;
   @Input() initialCheckIn = '';
   @Input() initialCheckOut = '';
   @Output() readonly rangeChange = new EventEmitter<{ checkIn: string; checkOut: string }>();

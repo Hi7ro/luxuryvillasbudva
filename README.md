@@ -37,7 +37,7 @@ These are placeholders on purpose — nothing here was invented to "look done":
 | Operator name and postal address | Legal pages | still required before go-live |
 | Impressum & privacy policy | `/[locale]/impressum`, `/[locale]/datenschutz` | implemented; legal placeholders still require review |
 | Photography and video | `src/assets/media` and `content.data.ts` | integrated; confirm publication rights |
-| Seasonal nightly rates | `src/app/core/config/pricing.config.ts` | €350–€500; confirm October, minimum stay and cancellation terms |
+| Seasonal nightly rates | `src/app/core/config/pricing.config.ts` | €378–€539; confirm minimum stay and cancellation terms |
 | Google Search Console + GA4/Plausible | not wired | see section 5 |
 
 ## 3. Live-Verfügbarkeit über Airbnb / Booking.com
@@ -73,6 +73,19 @@ ausreichend; der Exportlink endet auf `.ics` und enthält einen privaten Schlüs
 Wichtig: `npm start` verwendet den Angular-Entwicklungsserver und führt die
 Express-API aus `server.ts` nicht aus. Für einen vollständigen lokalen Test der
 Live-Synchronisierung deshalb den Produktionsbuild mit `npm run serve:ssr` starten.
+
+### ALL-INKL Webhosting ohne dauerhaften Node-Prozess
+
+Für das bestehende ALL-INKL-Webhosting enthält der Produktionsbuild zusätzlich
+eine funktionsgleiche PHP-Schnittstelle unter `src/public/api/availability.php`.
+Beim Upload des Inhalts aus `dist/villa-montemare-lumina/browser/` ruft Angular
+weiterhin `/api/availability` auf; die mitgelieferte `.htaccess` leitet diese
+Adresse an PHP weiter und übernimmt zugleich den Fallback für Angular-Routen.
+
+Die privaten Feeds werden in einer separaten `villa-calendar.php` außerhalb des
+öffentlichen Domainordners hinterlegt. Vorlage und vollständige Upload-Anleitung:
+`deployment/all-inkl/README.md`. Die echte Konfigurationsdatei ist absichtlich
+von Git ausgeschlossen.
 
 ## 4. Booking inquiry: how it works now, and when to change it
 

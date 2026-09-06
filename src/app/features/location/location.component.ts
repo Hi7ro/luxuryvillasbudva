@@ -46,6 +46,15 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
             'Budva’s Old Town, with its many restaurants, shops and markets, is around 15 minutes away.',
             'До Старого города Будвы с многочисленными ресторанами, магазинами и рынками можно добраться примерно за 15 минут.',
             'El casco antiguo de Budva, con numerosos restaurantes, tiendas y mercados, se encuentra a unos 15 minutos.') }}</p>
+          <div class="mobility-actions">
+            <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=HDL%20Smokov%20vijenac%20Drobni%C4%87i%20Montenegro" target="_blank" rel="noopener">
+              <span class="route-icon" aria-hidden="true">↗</span>
+              <span>
+                <small>{{ t.inline('Einkaufen in der Nähe', 'Groceries nearby', 'Магазин поблизости', 'Supermercado cercano') }}</small>
+                <strong>{{ t.inline('Route zum HDL anzeigen', 'Get directions to HDL', 'Построить маршрут до HDL', 'Cómo llegar a HDL') }}</strong>
+              </span>
+            </a>
+          </div>
         </article>
 
         <article class="content-block">
@@ -53,7 +62,13 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
           <h2>{{ t.inline('Strände in der Nähe', 'Nearby beaches', 'Пляжи поблизости', 'Playas cercanas') }}</h2>
           <ul class="beach-list">
             @for (beach of nearbyBeaches; track beach.name) {
-              <li><span>{{ beach.name }}</span><strong>{{ t.t(beach.travelTime) }}</strong></li>
+              <li>
+                <span>{{ beach.name }}</span>
+                <span class="beach-time">
+                  <strong>{{ t.t(beach.primaryTime) }}</strong>
+                  @if (beach.secondaryTime) { <small>{{ t.t(beach.secondaryTime) }}</small> }
+                </span>
+              </li>
             }
           </ul>
         </article>
@@ -138,7 +153,7 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
 
       <div class="map-wrap">
         <iframe
-          src="https://www.google.com/maps?q=42.239775685552246%c18.903049972422934&amp;z=17&amp;output=embed"
+          src="https://www.google.com/maps?q=42.239775685552246%2C18.903049972422934&amp;z=18&amp;output=embed"
 
           [title]="t.inline('Lage der Villen am Smokov vijenac auf Google Maps', 'Location of the villas at Smokov vijenac on Google Maps', 'Расположение вилл на Smokov vijenac в Google Maps', 'Ubicación de las villas en Smokov vijenac en Google Maps')"
           loading="lazy"
@@ -147,7 +162,7 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
         </iframe>
         <div class="map-caption">
           <p>{{ t.inline('Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, муниципалитет Будва, 85315, Черногория', 'Smokov vijenac, Drobnići, municipio de Budva, 85315, Montenegro') }}</p>
-          <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=42.2395%2C18.9025"
+          <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=42.239775685552246%2C18.903049972422934"
              target="_blank" rel="noopener">
             {{ t.inline('In Google Maps öffnen', 'Open in Google Maps', 'Открыть в Google Maps', 'Abrir en Google Maps') }}
           </a>
@@ -166,9 +181,18 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
     .content-block { max-width: 760px; }
     .content-block h2, .highlight-card h2 { margin-bottom: 1.25rem; }
     .content-block p { line-height: 1.75; }
+    .mobility-actions { margin-top: 1.75rem; }
+    .route-link { display: inline-flex; align-items: center; gap: .9rem; padding: .9rem 1.1rem; border: 1px solid color-mix(in srgb, var(--c-sand) 85%, transparent); border-radius: 8px; background: color-mix(in srgb, var(--c-ivory) 82%, white); color: var(--c-adria); text-decoration: none; box-shadow: 0 12px 28px rgba(23,50,63,.07); transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease; }
+    .route-link:hover { transform: translateY(-2px); border-color: var(--c-champagne); box-shadow: 0 16px 34px rgba(23,50,63,.11); }
+    .route-link small, .route-link strong { display: block; }
+    .route-link small { margin-bottom: .16rem; color: var(--c-olive); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+    .route-link strong { font-size: .9rem; }
+    .route-icon { display: grid; place-items: center; flex: 0 0 2.35rem; width: 2.35rem; height: 2.35rem; border-radius: 50%; background: var(--c-adria); color: var(--c-limestone); font-size: 1rem; }
     .beach-list { list-style: none; padding: 0; margin: 2rem 0 0; }
     .beach-list li { display: flex; justify-content: space-between; gap: 1.5rem; padding: .9rem 0; border-bottom: 1px solid color-mix(in srgb, var(--c-sand) 75%, transparent); }
-    .beach-list strong { color: var(--c-adria); white-space: nowrap; }
+    .beach-time { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+    .beach-time strong { color: var(--c-adria); white-space: nowrap; }
+    .beach-time small { margin-top: .2rem; color: var(--c-olive); font-size: .76rem; white-space: nowrap; }
     .location-aside { position: sticky; top: 7rem; display: flex; flex-direction: column; gap: 1.5rem; }
     .highlight-card { position: relative; isolation: isolate; overflow: hidden; padding: clamp(1.6rem, 2.5vw, 2.2rem); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
     .highlight-card::after { content: ''; position: absolute; z-index: -1; right: -4rem; bottom: -5rem; width: 12rem; height: 12rem; border: 1px solid color-mix(in srgb, var(--c-champagne) 45%, transparent); border-radius: 50%; pointer-events: none; }
@@ -215,7 +239,7 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       .location-aside { grid-template-columns: 1fr; }
       .family-panel { grid-template-columns: 1fr; padding: 1.5rem; }
       .beach-list li { align-items: baseline; gap: .75rem; }
-      .beach-list strong { text-align: right; }
+      .beach-time { text-align: right; }
       .distances li { gap: 1rem; align-items: baseline; }
       .distances strong { white-space: nowrap; }
       .map-wrap { border-radius: 10px; }
@@ -232,26 +256,27 @@ export class LocationComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly distances = DISTANCES;
-  protected readonly nearbyBeaches: Array<{ name: string; travelTime: LocalizedText }> = [
+  protected readonly nearbyBeaches: Array<{ name: string; primaryTime: LocalizedText; secondaryTime?: LocalizedText }> = [
     {
       name: 'Drobni Pijesak',
-      travelTime: { de: 'ca. 3 Autominuten', en: 'approx. 3 min by car', ru: 'около 3 мин. на автомобиле', es: 'aprox. 3 min en coche' },
+      primaryTime: { de: 'ca. 10 Gehminuten', en: 'approx. 10 min on foot', ru: 'около 10 мин. пешком', es: 'aprox. 10 min a pie' },
+      secondaryTime: { de: 'ca. 3 Autominuten', en: 'approx. 3 min by car', ru: 'около 3 мин. на автомобиле', es: 'aprox. 3 min en coche' },
     },
     {
       name: 'Crvena Glavica',
-      travelTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
+      primaryTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
     },
     {
       name: 'Sveti Stefan Beach',
-      travelTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
+      primaryTime: { de: 'ca. 5 Autominuten', en: 'approx. 5 min by car', ru: 'около 5 мин. на автомобиле', es: 'aprox. 5 min en coche' },
     },
     {
       name: 'Queen’s Beach & King’s Beach',
-      travelTime: { de: 'ca. 6 Autominuten', en: 'approx. 6 min by car', ru: 'около 6 мин. на автомобиле', es: 'aprox. 6 min en coche' },
+      primaryTime: { de: 'ca. 6 Autominuten', en: 'approx. 6 min by car', ru: 'около 6 мин. на автомобиле', es: 'aprox. 6 min en coche' },
     },
     {
       name: 'Kamenovo Beach',
-      travelTime: { de: 'ca. 8 Autominuten', en: 'approx. 8 min by car', ru: 'около 8 мин. на автомобиле', es: 'aprox. 8 min en coche' },
+      primaryTime: { de: 'ca. 8 Autominuten', en: 'approx. 8 min by car', ru: 'около 8 мин. на автомобиле', es: 'aprox. 8 min en coche' },
     },
   ];
 

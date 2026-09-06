@@ -1,16 +1,16 @@
 export const SEASONAL_NIGHTLY_RATES_EUR: Readonly<Record<number, number>> = {
-  1: 350,
-  2: 350,
-  3: 350,
-  4: 350,
-  5: 400,
-  6: 450,
-  7: 500,
-  8: 500,
-  9: 450,
-  10: 400,
-  11: 350,
-  12: 350,
+  1: 378,
+  2: 378,
+  3: 378,
+  4: 378,
+  5: 431,
+  6: 485,
+  7: 539,
+  8: 539,
+  9: 485,
+  10: 431,
+  11: 378,
+  12: 378,
 };
 
 export const MINIMUM_NIGHTLY_RATE_EUR = Math.min(...Object.values(SEASONAL_NIGHTLY_RATES_EUR));
