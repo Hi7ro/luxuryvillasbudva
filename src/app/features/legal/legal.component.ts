@@ -9,7 +9,7 @@ import { CONTACT } from '../../core/config/contact.config';
   selector: 'app-legal',
   standalone: true,
   template: `
-    <main class="legal container">
+    <section class="legal container">
       @if (page === 'imprint') {
         <h1>{{ t.inline('Impressum', 'Legal notice', 'Правовая информация', 'Aviso legal') }}</h1>
         <p class="legal-intro">{{ t.inline('Angaben zum Verantwortlichen dieser Website.', 'Information about the person responsible for this website.', 'Сведения о лице, ответственном за этот сайт.', 'Información sobre el responsable de este sitio web.', 'Podaci o licu odgovornom za ovu veb-stranicu.') }}</p>
@@ -75,7 +75,7 @@ import { CONTACT } from '../../core/config/contact.config';
         <h2>{{ t.inline('8. Stand und Änderungen', '8. Version and changes', '8. Версия и изменения', '8. Versión y cambios') }}</h2>
         <p>{{ t.inline('Stand: September 2026. Diese Erklärung ist anzupassen, sobald sich eingesetzte Dienste oder Verarbeitungen ändern.', 'Version: September 2026. Update this policy whenever services or processing activities change.', 'Версия: сентябрь 2026 года. Политику необходимо обновлять при изменении сервисов или обработки.', 'Versión: septiembre de 2026. La política debe actualizarse cuando cambien los servicios o tratamientos.') }}</p>
       }
-    </main>
+    </section>
   `,
   styles: [`
     .legal { max-width: 900px; padding-block: var(--space-5); }

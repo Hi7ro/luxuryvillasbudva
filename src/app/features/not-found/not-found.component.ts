@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Locale } from '../../core/models/villa.model';
 import { SeoService } from '../../core/services/seo.service';
 import { TranslationService } from '../../core/services/translation.service';
@@ -28,10 +28,15 @@ import { TranslationService } from '../../core/services/translation.service';
 export class NotFoundComponent implements OnInit {
   protected readonly t = inject(TranslationService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
 
   ngOnInit(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const routeLocale = this.route.snapshot.data['locale'] as Locale | undefined;
+    const urlLocale = this.router.url.split('?')[0].split('/').filter(Boolean)[0];
+    const supported: Locale[] = ['de', 'en', 'ru', 'es', 'sr'];
+    const locale: Locale = routeLocale
+      ?? (supported.includes(urlLocale as Locale) ? (urlLocale as Locale) : 'de');
     this.t.setLocale(locale);
     this.seo.setPage({
       locale,

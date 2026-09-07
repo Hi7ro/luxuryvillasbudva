@@ -8,6 +8,7 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
       en: 'Welcome to the Adriatic',
       ru: 'Добро пожаловать на Адриатику',
       es: 'Bienvenido al Adriático',
+      sr: 'Dobrodošli na Jadran',
     },
     paragraphs: [
       {
@@ -15,12 +16,14 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
         en: `Welcome to ${villaName} in Reževići, Municipality of Budva - your private retreat on Montenegro's Adriatic coast. Enjoy breathtaking sea views, unwind by the private pool and share unforgettable sunsets with family and friends.`,
         ru: `Добро пожаловать в ${villaName} в Режевичи, муниципалитет Будва, - ваше частное убежище на Адриатическом побережье Черногории. Наслаждайтесь захватывающим видом на море, отдыхайте у частного бассейна и встречайте незабываемые закаты с семьёй и друзьями.`,
         es: `Bienvenido a ${villaName} en Reževići, municipio de Budva: tu refugio privado en la costa adriática de Montenegro. Disfruta de impresionantes vistas al mar, relájate junto a la piscina privada y contempla atardeceres inolvidables con familiares y amigos.`,
+        sr: `Dobrodošli u ${villaName} u Reževićima, opština Budva – vaše privatno utočište na crnogorskoj obali Jadrana. Uživajte u veličanstvenom pogledu na more, opustite se pored privatnog bazena i podelite nezaboravne zalaske sunca sa porodicom i prijateljima.`,
       },
       {
         de: `In ruhiger Lage im charmanten Küstenort Reževići verbindet ${villaName} modernes Design, Privatsphäre und höchsten Komfort. Ob Familienurlaub, Auszeit mit Freunden oder besonderer Anlass - die Villa bietet den passenden Rahmen für einen exklusiven Aufenthalt nahe Budva, Sveti Stefan und Petrovac.`,
         en: `In the peaceful coastal village of Reževići, ${villaName} combines modern design, privacy and exceptional comfort. Whether for a family holiday, time away with friends or a special occasion, the villa is an exclusive base close to Budva, Sveti Stefan and Petrovac.`,
         ru: `В тихом прибрежном посёлке Режевичи ${villaName} сочетает современный дизайн, уединение и высокий уровень комфорта. Семейный отпуск, поездка с друзьями или особое событие - вилла станет прекрасным местом для эксклюзивного отдыха рядом с Будвой, Свети-Стефаном и Петровацем.`,
         es: `En el tranquilo pueblo costero de Reževići, ${villaName} combina diseño moderno, privacidad y el máximo confort. Ya sea para unas vacaciones en familia, una escapada con amigos o una ocasión especial, la villa ofrece un entorno exclusivo cerca de Budva, Sveti Stefan y Petrovac.`,
+        sr: `U mirnom primorskom mestu Reževići, ${villaName} spaja moderan dizajn, privatnost i izuzetan komfor. Bilo da je reč o porodičnom odmoru, druženju sa prijateljima ili posebnoj prilici, vila predstavlja ekskluzivno polazište blizu Budve, Svetog Stefana i Petrovca.`,
       },
     ],
   },
@@ -30,6 +33,7 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
       en: 'Living across three levels',
       ru: 'Три уровня комфорта',
       es: 'Tres niveles para disfrutar',
+      sr: 'Život na tri nivoa',
     },
     paragraphs: [
       {
@@ -37,18 +41,21 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
         en: 'The villa extends across three levels and accommodates up to six guests. The upper floor features two double bedrooms, each with its own private bathroom.',
         ru: 'Вилла занимает три уровня и рассчитана на размещение до шести гостей. На верхнем этаже находятся две спальни с двуспальными кроватями, каждая с собственной ванной комнатой.',
         es: 'La villa se distribuye en tres niveles y tiene capacidad para seis personas. En la planta superior hay dos dormitorios con cama doble y baño privado.',
+        sr: 'Vila se prostire na tri nivoa i može da primi do šest gostiju. Gornji sprat ima dve dvokrevetne spavaće sobe, svaka sa sopstvenim kupatilom.',
       },
       {
         de: 'Das Erdgeschoss verfügt über eine helle, offene Wohnküche mit großem Esstisch für gemeinsame Mahlzeiten. Im Untergeschoss liegen ein weiteres Doppelzimmer mit eigenem Bad, ein Arbeitszimmer mit Schreibtisch, eine zusätzliche Getränkeküche und ein separater Wäscheraum mit Waschmaschine.',
         en: 'The ground floor has a bright, open-plan living kitchen with a large dining table for shared meals. On the lower floor are another double bedroom with a private bathroom, a study with a desk, an additional kitchenette and a separate utility room with a washing machine.',
         ru: 'На первом этаже расположена светлая открытая кухня-гостиная с большим обеденным столом. На нижнем уровне находятся ещё одна спальня с двуспальной кроватью и собственной ванной, кабинет с письменным столом, дополнительная мини-кухня и отдельная прачечная со стиральной машиной.',
         es: 'La planta baja dispone de una luminosa cocina abierta con zona de estar y una gran mesa de comedor. En la planta inferior hay otro dormitorio doble con baño privado, un despacho con escritorio, una cocina auxiliar y un lavadero independiente con lavadora.',
+        sr: 'U prizemlju se nalazi svetao, otvoren dnevni boravak sa kuhinjom i velikim trpezarijskim stolom za zajedničke obroke. Na donjem spratu su još jedna dvokrevetna spavaća soba sa privatnim kupatilom, radna soba sa stolom, dodatna čajna kuhinja i posebna pomoćna prostorija sa mašinom za pranje veša.',
       },
       {
         de: 'Jede Ebene besitzt eine eigene Terrasse mit herrlichem Ausblick. So entstehen drinnen wie draußen mehrere private Rückzugsorte.',
         en: 'Every level has its own terrace with beautiful views, creating several private places to retreat both indoors and out.',
         ru: 'На каждом уровне есть собственная терраса с прекрасным видом, поэтому и внутри, и снаружи предусмотрено несколько уединённых зон отдыха.',
         es: 'Cada nivel cuenta con su propia terraza y hermosas vistas, creando distintos rincones privados tanto en el interior como al aire libre.',
+        sr: 'Svaki nivo ima svoju terasu sa prekrasnim pogledom, stvarajući nekoliko privatnih mesta za povlačenje kako u zatvorenom tako i napolju.',
       },
     ],
   },
@@ -58,6 +65,7 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
       en: 'Pool, garden and panorama',
       ru: 'Бассейн, сад и панорама',
       es: 'Piscina, jardín y panorama',
+      sr: 'Bazen, bašta i panorama',
     },
     paragraphs: [
       {
@@ -65,12 +73,14 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
         en: 'The outdoor area comprises a beautifully landscaped, three-level garden with mature olive trees and a private swimming pool with a generous sun terrace.',
         ru: 'На территории расположен красиво оформленный трёхуровневый сад со старыми оливковыми деревьями и частный бассейн с просторной солнечной террасой.',
         es: 'El exterior ofrece un cuidado jardín en tres niveles con olivos centenarios y una piscina privada con una amplia terraza-solárium.',
+        sr: 'Spoljni prostor obuhvata lepo uređenu baštu na tri nivoa sa zrelim stablima maslina i privatnim bazenom sa velikodušnom terasom za sunčanje.',
       },
       {
         de: 'Ein besonderes Highlight ist die Dachterrasse mit spektakulärem Panoramablick auf das Meer und die umliegende Berglandschaft.',
         en: 'A particular highlight is the rooftop terrace with spectacular panoramic views of the sea and surrounding mountains.',
         ru: 'Особая изюминка виллы - терраса на крыше с впечатляющим панорамным видом на море и окружающие горы.',
         es: 'Uno de sus grandes atractivos es la azotea, con espectaculares vistas panorámicas al mar y a las montañas que la rodean.',
+        sr: 'Poseban vrhunac je krovna terasa sa spektakularnim panoramskim pogledom na more i okolne planine.',
       },
     ],
   },

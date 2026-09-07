@@ -125,15 +125,37 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       </div>
 
       <article class="family-panel">
-        <div>
-          <p class="eyebrow">{{ t.inline('Für Groß und Klein', 'For all ages', 'Для всей семьи', 'Para todas las edades') }}</p>
-          <h2>{{ t.inline('Freizeit & Familienaktivitäten', 'Leisure & family activities', 'Отдых и развлечения для всей семьи', 'Ocio y actividades familiares') }}</h2>
+        <div class="family-intro">
+          <div>
+            <p class="eyebrow">{{ t.inline('Für Groß und Klein', 'For all ages', 'Для всей семьи', 'Para todas las edades', 'Za sve generacije') }}</p>
+            <h2>{{ t.inline('Freizeit & Familienaktivitäten', 'Leisure & family activities', 'Отдых и развлечения для всей семьи', 'Ocio y actividades familiares', 'Odmor i porodične aktivnosti') }}</h2>
+          </div>
+          <p>{{ t.inline(
+            'In Budva erwarten dich zahlreiche Freizeitmöglichkeiten für die ganze Familie – darunter Wasserparks, Bootsausflüge, Spielplätze und kinderfreundliche Strände. Auch Wanderwege und Abenteuerparks befinden sich in der näheren Umgebung.',
+            'Budva offers a wide range of activities for the whole family, including water parks, boat trips, playgrounds and child-friendly beaches. Hiking trails and adventure parks can also be found nearby.',
+            'В Будве вас ждёт множество развлечений для всей семьи: аквапарки, морские прогулки, игровые площадки и пляжи, подходящие для детей. Поблизости также находятся пешеходные маршруты и парки приключений.',
+            'Budva ofrece numerosas actividades para toda la familia, como parques acuáticos, excursiones en barco, parques infantiles y playas aptas para niños. También hay rutas de senderismo y parques de aventura en los alrededores.',
+            'Budva nudi brojne aktivnosti za celu porodicu, uključujući akva-parkove, izlete brodom, igrališta i plaže pogodne za decu. U blizini se nalaze i pešačke staze i avanturistički parkovi.') }}</p>
         </div>
-        <p>{{ t.inline(
-          'In Budva erwarten dich zahlreiche Freizeitmöglichkeiten für die ganze Familie – darunter Wasserparks, Bootsausflüge, Spielplätze und kinderfreundliche Strände. Auch Wanderwege und Abenteuerparks befinden sich in der näheren Umgebung.',
-          'Budva offers a wide range of activities for the whole family, including water parks, boat trips, playgrounds and child-friendly beaches. Hiking trails and adventure parks can also be found nearby.',
-          'В Будве вас ждёт множество развлечений для всей семьи: аквапарки, морские прогулки, игровые площадки и пляжи, подходящие для детей. Поблизости также находятся пешеходные маршруты и парки приключений.',
-          'Budva ofrece numerosas actividades para toda la familia, como parques acuáticos, excursiones en barco, parques infantiles y playas aptas para niños. También hay rutas de senderismo y parques de aventura en los alrededores.') }}</p>
+
+        <div class="activity-gallery" [attr.aria-label]="t.inline('Freizeitmöglichkeiten rund um Budva', 'Leisure activities around Budva', 'Варианты отдыха в окрестностях Будвы', 'Actividades de ocio alrededor de Budva', 'Aktivnosti u okolini Budve')">
+          @for (activity of activityHighlights; track activity.image) {
+            <figure class="activity-card">
+              <div class="activity-image">
+                <img [src]="activity.image" [srcset]="responsiveSrcSet(activity.image)"
+                     sizes="(max-width: 700px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                     [alt]="t.t(activity.alt)" width="1440" height="960" loading="lazy" />
+                <figcaption>{{ t.t(activity.title) }}</figcaption>
+              </div>
+              <p class="activity-credit">
+                {{ t.inline('Foto', 'Photo', 'Фото', 'Foto', 'Fotografija') }}:
+                <a [href]="activity.sourceUrl" target="_blank" rel="noopener">{{ activity.author }}</a>
+                · <a [href]="activity.licenseUrl" target="_blank" rel="noopener">{{ activity.license }}</a>
+                · {{ t.inline('weboptimiert', 'web-optimised', 'оптимизировано для сайта', 'optimizada para web', 'optimizovano za veb') }}
+              </p>
+            </figure>
+          }
+        </div>
       </article>
     </section>
 
@@ -241,9 +263,19 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
     .card-tags span { padding: .38rem .58rem; border-radius: 3px; background: color-mix(in srgb, var(--c-sand) 28%, transparent); color: var(--c-olive); font-size: .68rem; line-height: 1.25; }
     .budva-card .card-tags { border-top-color: rgba(255,255,255,.14); }
     .budva-card .card-tags span { background: rgba(255,255,255,.08); color: rgba(255,255,255,.72); }
-    .family-panel { display: grid; grid-template-columns: minmax(240px, .7fr) minmax(0, 1.3fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; margin-top: clamp(3rem, 7vw, 6rem); padding: clamp(2rem, 5vw, 4rem); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--c-sand) 28%, transparent); }
-    .family-panel h2 { margin-bottom: 0; }
-    .family-panel > p { margin: 0; font-size: 1.05rem; line-height: 1.8; }
+    .family-panel { margin-top: clamp(3rem, 7vw, 6rem); padding: clamp(2rem, 5vw, 4rem); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--c-sand) 28%, transparent); }
+    .family-intro { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+    .family-intro h2 { max-width: 13ch; margin-bottom: 0; }
+    .family-intro > p { max-width: 62ch; margin: 0; font-size: 1.05rem; line-height: 1.8; }
+    .activity-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.8rem, 1.8vw, 1.25rem); margin-top: clamp(2rem, 5vw, 3.5rem); }
+    .activity-card { min-width: 0; margin: 0; }
+    .activity-image { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 3; border-radius: 10px; background: var(--c-sand); box-shadow: 0 16px 34px rgba(23,50,63,.11); }
+    .activity-image::after { content: ''; position: absolute; z-index: 1; inset: 38% 0 0; background: linear-gradient(transparent, rgba(7,28,37,.82)); pointer-events: none; }
+    .activity-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms cubic-bezier(.2,.7,.2,1); }
+    .activity-card:hover img { transform: scale(1.035); }
+    .activity-image figcaption { position: absolute; z-index: 2; right: 1.15rem; bottom: 1.05rem; left: 1.15rem; color: #fff; font-family: var(--font-display); font-size: clamp(1.25rem, 2.2vw, 1.75rem); line-height: 1.05; text-wrap: balance; }
+    .activity-credit { margin: .6rem .15rem 0; color: var(--c-olive); font-size: .58rem; line-height: 1.45; }
+    .activity-credit a { color: inherit; text-underline-offset: 2px; }
     .map-heading { display: grid; grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: clamp(2rem, 5vw, 5rem); align-items: end; margin-bottom: var(--space-4); }
     .map-heading h2 { margin-bottom: 0; }
     .distances { list-style: none; padding: 0; margin: 0; }
@@ -269,6 +301,9 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       .location-grid { grid-template-columns: 1fr; }
       .location-aside { position: static; display: grid; grid-template-columns: 1fr 1fr; }
       .map-heading { grid-template-columns: 1fr; align-items: start; }
+      .activity-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .activity-card:last-child { grid-column: 1 / -1; }
+      .activity-card:last-child .activity-image { aspect-ratio: 16 / 8; }
     }
     @media (max-width: 700px) {
       .page-hero { padding-block: 3rem 1.5rem; }
@@ -276,7 +311,10 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       .location-grid { gap: 3rem; }
       .location-main { gap: 3.5rem; }
       .location-aside { grid-template-columns: 1fr; }
-      .family-panel { grid-template-columns: 1fr; padding: 1.5rem; }
+      .family-panel { padding: 1.5rem; }
+      .family-intro, .activity-gallery { grid-template-columns: 1fr; }
+      .activity-card:last-child { grid-column: auto; }
+      .activity-card:last-child .activity-image, .activity-image { aspect-ratio: 4 / 3; }
       .beach-list li { align-items: baseline; gap: .75rem; }
       .beach-time { text-align: right; }
       .distances li { gap: 1rem; align-items: baseline; }
@@ -301,6 +339,43 @@ export class LocationComponent implements OnInit {
   protected readonly mapConsent = signal(false);
 
   protected readonly distances = DISTANCES;
+  protected readonly activityHighlights: Array<{
+    image: string;
+    title: LocalizedText;
+    alt: LocalizedText;
+    author: string;
+    sourceUrl: string;
+    license: string;
+    licenseUrl: string;
+  }> = [
+    {
+      image: '/assets/media/location/activities/aquapark-budva.webp',
+      title: { de: 'Wasserspaß für Familien', en: 'Water fun for families', ru: 'Водные развлечения для всей семьи', es: 'Diversión acuática en familia', sr: 'Vodena zabava za porodice' },
+      alt: { de: 'Wasserrutschen und Familienbereich im Aquapark Budva', en: 'Water slides and family area at Aquapark Budva', ru: 'Водные горки и семейная зона в аквапарке Будвы', es: 'Toboganes y zona familiar del Aquapark Budva', sr: 'Tobogani i porodična zona u Akva-parku Budva' },
+      author: 'KarenWunderkind',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Aquapark_Budva.jpeg',
+      license: 'CC BY-SA 4.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    },
+    {
+      image: '/assets/media/location/activities/budva-marina.webp',
+      title: { de: 'Bootsausflüge & Buchten', en: 'Boat trips & secluded bays', ru: 'Морские прогулки и бухты', es: 'Excursiones en barco y calas', sr: 'Izleti brodom i uvale' },
+      alt: { de: 'Boote und Yachten im Hafen von Budva vor der Bergkulisse', en: 'Boats and yachts in Budva Marina with mountains behind', ru: 'Лодки и яхты в марине Будвы на фоне гор', es: 'Barcos y yates en el puerto deportivo de Budva con las montañas al fondo', sr: 'Čamci i jahte u budvanskoj marini sa planinama u pozadini' },
+      author: 'Dirgela',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Budvos_uostelis.jpg',
+      license: 'CC BY 3.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+    },
+    {
+      image: '/assets/media/location/activities/kamenovo-beach.webp',
+      title: { de: 'Familienzeit am Meer', en: 'Family time by the sea', ru: 'Семейный отдых у моря', es: 'Tiempo en familia junto al mar', sr: 'Porodično vreme pored mora' },
+      alt: { de: 'Kamenovo Beach mit klarem Wasser und bewaldeter Bergkulisse', en: 'Kamenovo Beach with clear water and forested mountains', ru: 'Пляж Каменово с прозрачной водой и зелёными горами', es: 'Playa de Kamenovo con agua cristalina y montañas boscosas', sr: 'Plaža Kamenovo sa čistim morem i zelenim planinama' },
+      author: 'Liilia Moroz',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Kamenovo_beach_Montenegro.jpg',
+      license: 'CC BY-SA 4.0',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    },
+  ];
   protected readonly nearbyBeaches: Array<{ name: string; primaryTime: LocalizedText; secondaryTime?: LocalizedText }> = [
     {
       name: 'Drobni Pijesak',
@@ -397,6 +472,10 @@ export class LocationComponent implements OnInit {
 
   protected googlePrivacyUrl(): string {
     return `https://policies.google.com/privacy?hl=${this.locale()}`;
+  }
+
+  protected responsiveSrcSet(path: string): string {
+    return `${path.replace(/\.webp$/, '-720.webp')} 720w, ${path} 1440w`;
   }
 
 }

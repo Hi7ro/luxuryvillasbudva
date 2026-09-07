@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -480,6 +481,7 @@ export class VillaDetailComponent implements OnInit {
   private readonly structuredData = inject(StructuredDataService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly distances = DISTANCES;
   protected readonly showMobileCta = signal(false);
@@ -488,11 +490,23 @@ export class VillaDetailComponent implements OnInit {
   protected otherVilla: Villa | undefined;
 
   ngOnInit(): void {
+    // The :slug route is reused when navigating between the two villa pages
+    // (e.g. the "see the other villa" link), so react to param changes rather
+    // than reading a one-time snapshot.
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadVilla());
+  }
+
+  private loadVilla(): void {
     const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
     this.t.setLocale(locale);
+    this.allGalleryImagesVisible.set(false);
+    this.showMobileCta.set(false);
     const slug = this.route.snapshot.paramMap.get('slug');
     this.villa = VILLAS.find((v) => v.slug === slug);
     this.otherVilla = VILLAS.find((v) => v.slug !== slug);
+    if (this.villa) this.bookingWidget?.setPreselectedVilla(this.villa.slug);
     if (!this.villa) {
       this.seo.setPage({
         locale,

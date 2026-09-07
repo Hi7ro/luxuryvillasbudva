@@ -14,3 +14,39 @@ RewriteRule ^ - [L]
 # Angular client-side routes such as /de and /sr/villas/villa-lumina.
 # Angular's SSR-capable browser build names the static entry file index.csr.html.
 RewriteRule ^ index.csr.html [L]
+
+# --- Security response headers -------------------------------------------------
+# The production deployment is static (no Node/Express), so the headers set in
+# server.ts never apply. Re-add the safe subset here. A Content-Security-Policy
+# is intentionally left out because the location page embeds a Google Maps
+# iframe and Angular injects component styles inline; add one only after testing
+# it against the live Maps embed on a staging domain.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+</IfModule>
+
+# --- Compression -------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript text/javascript
+  AddOutputFilterByType DEFLATE application/json application/ld+json image/svg+xml
+</IfModule>
+
+# --- Caching ---------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # Content-hashed build artifacts never change under the same name.
+  <FilesMatch "\.(?:js|css|woff2?|webp|avif|jpe?g|png|gif|mp4|svg)$">
+    ExpiresDefault "access plus 1 year"
+    Header append Cache-Control "public, immutable"
+  </FilesMatch>
+  # The SPA shell and generated feeds must stay fresh.
+  <FilesMatch "^(?:index\.csr\.html|sitemap\.xml|robots\.txt)$">
+    ExpiresDefault "access plus 0 seconds"
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

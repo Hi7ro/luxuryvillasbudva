@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -68,6 +69,13 @@ import { GuideArticle, Locale } from '../../core/models/villa.model';
           </a>
         </aside>
       </article>
+    } @else {
+      <section class="missing-villa container">
+        <p class="eyebrow">404</p>
+        <h1>{{ t.inline('Dieser Reiseführer wurde nicht gefunden.', 'This guide could not be found.', 'Этот путеводитель не найден.', 'No hemos encontrado esta guía.', 'Ovaj vodič nije pronađen.') }}</h1>
+        <p>{{ t.inline('Entdecken Sie unsere Reiseführer auf der Startseite.', 'Discover our guides on the home page.', 'Познакомьтесь с нашими путеводителями на главной странице.', 'Descubre nuestras guías en la página de inicio.', 'Otkrijte naše vodiče na početnoj stranici.') }}</p>
+        <a class="btn btn-primary" [routerLink]="['/' + locale()]">{{ t.inline('Zur Startseite', 'Back to home', 'На главную', 'Volver al inicio', 'Na početnu') }}</a>
+      </section>
     }
   `,
   styles: [`
@@ -97,15 +105,34 @@ export class GuideDetailComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly structuredData = inject(StructuredDataService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected guide: GuideArticle | undefined;
 
   ngOnInit(): void {
+    // The :slug route is reused when navigating between guide articles, so
+    // react to param changes rather than reading a one-time snapshot.
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadGuide());
+  }
+
+  private loadGuide(): void {
     const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
     this.t.setLocale(locale);
     const slug = this.route.snapshot.paramMap.get('slug');
     this.guide = GUIDE_ARTICLES.find((g) => g.slug === slug);
-    if (!this.guide) return;
+    if (!this.guide) {
+      this.structuredData.removeJsonLd('ld-guide');
+      this.seo.setPage({
+        locale,
+        path: `${locale === 'de' ? 'reisefuehrer' : 'guides'}/${slug ?? 'unbekannt'}`,
+        title: this.t.inline('Reiseführer nicht gefunden | MonteMare & Lumina', 'Guide not found | MonteMare & Lumina', 'Путеводитель не найден | MonteMare & Lumina', 'Guía no encontrada | MonteMare & Lumina', 'Vodič nije pronađen | MonteMare & Lumina'),
+        description: this.t.inline('Der angeforderte Reiseführer wurde nicht gefunden.', 'The requested guide could not be found.', 'Запрошенный путеводитель не найден.', 'No se ha encontrado la guía solicitada.', 'Traženi vodič nije pronađen.'),
+        noindex: true,
+      });
+      return;
+    }
 
     const routeBase = locale === 'de' ? 'reisefuehrer' : 'guides';
     this.seo.setPage({

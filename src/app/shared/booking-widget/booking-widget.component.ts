@@ -351,6 +351,13 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void { this.form.patchValue({ villaSlug: this.preselectedVillaSlug }); }
 
+  /** Called by the villa detail page when the user switches to the other villa. */
+  setPreselectedVilla(slug: VillaSlug): void {
+    if (this.drawerOpen() || this.form.controls.villaSlug.value === slug) return;
+    this.form.patchValue({ villaSlug: slug, checkIn: '', checkOut: '' });
+    this.state.set('idle');
+  }
+
   ngOnDestroy(): void { this.restorePageState(false); }
 
   @HostListener('document:keydown', ['$event'])

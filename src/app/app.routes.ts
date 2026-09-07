@@ -70,11 +70,11 @@ export const routes: Routes = [
   { path: 'es/guides/:slug', data: { locale: 'es' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
   { path: 'sr/guides/:slug', data: { locale: 'sr' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
 
-  ...(['de', 'en', 'ru', 'es', 'sr'] as const).map((locale) => ({
-    path: `${locale}/**`,
-    data: { locale },
+  // Angular only supports `**` as a single top-level catch-all — scoped
+  // wildcards like `de/**` never match — so one 404 route handles every
+  // unmatched URL and derives its language from the first path segment.
+  {
+    path: '**',
     loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
-  })),
-
-  { path: '**', redirectTo: 'de' },
+  },
 ];
