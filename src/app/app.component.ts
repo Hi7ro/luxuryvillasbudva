@@ -68,7 +68,7 @@ export class AppComponent {
 
   private isHomepage(urlTree: ReturnType<Router['parseUrl']>): boolean {
     const segments = urlTree.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
-    return segments.length === 1 && ['de', 'en', 'ru', 'es'].includes(segments[0]);
+    return segments.length === 1 && ['de', 'en', 'ru', 'es', 'sr'].includes(segments[0]);
   }
 
   private scrollToTop(): void {

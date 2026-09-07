@@ -1,5 +1,5 @@
 Options -Indexes
-DirectoryIndex index.html
+DirectoryIndex index.html index.csr.html
 
 RewriteEngine On
 
@@ -11,6 +11,6 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Angular client-side routes such as /de and /de/villen/villa-lumina.
-RewriteRule ^ index.html [L]
-
+# Angular client-side routes such as /de and /sr/villas/villa-lumina.
+# Angular's SSR-capable browser build names the static entry file index.csr.html.
+RewriteRule ^ index.csr.html [L]

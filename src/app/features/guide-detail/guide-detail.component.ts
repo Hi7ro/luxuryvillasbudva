@@ -20,6 +20,7 @@ import { GuideArticle, Locale } from '../../core/models/villa.model';
 
       <article class="guide container">
         <header>
+          <p class="eyebrow">{{ t.t(guide.category) }}</p>
           <h1>{{ t.t(guide.title) }}</h1>
           <p class="meta">
             {{ t.inline('Aktualisiert am', 'Updated on', 'Обновлено', 'Actualizado el') }} {{ guide.updatedOn }}
@@ -27,7 +28,31 @@ import { GuideArticle, Locale } from '../../core/models/villa.model';
           </p>
         </header>
 
+        <figure class="guide-image guide-image-hero">
+          <img [src]="guide.image.src" [srcset]="responsiveSrcSet(guide.image.src)" sizes="(max-width: 820px) 100vw, 760px"
+               [alt]="t.t(guide.image.alt)" width="1440" height="960" />
+          <figcaption>
+            {{ t.inline('Foto', 'Photo', 'Фото', 'Foto', 'Fotografija') }}:
+            <a [href]="guide.image.credit.sourceUrl" target="_blank" rel="noopener">{{ guide.image.credit.author }}</a>
+            · <a [href]="guide.image.credit.licenseUrl" target="_blank" rel="noopener">{{ guide.image.credit.license }}</a>
+            @if (guide.image.credit.modified) { · {{ t.inline('weboptimierte Version', 'web-optimised version', 'версия оптимизирована для сайта', 'versión optimizada para web', 'verzija optimizovana za veb') }} }
+          </figcaption>
+        </figure>
+
         <div class="guide-body" [innerHTML]="body()"></div>
+
+        @if (guide.secondaryImage; as secondaryImage) {
+          <figure class="guide-image guide-image-secondary">
+            <img [src]="secondaryImage.src" [srcset]="responsiveSrcSet(secondaryImage.src)" sizes="(max-width: 820px) 100vw, 760px"
+                 [alt]="t.t(secondaryImage.alt)" width="1440" height="960" loading="lazy" />
+            <figcaption>
+              {{ t.inline('Foto', 'Photo', 'Фото', 'Foto', 'Fotografija') }}:
+              <a [href]="secondaryImage.credit.sourceUrl" target="_blank" rel="noopener">{{ secondaryImage.credit.author }}</a>
+              · <a [href]="secondaryImage.credit.licenseUrl" target="_blank" rel="noopener">{{ secondaryImage.credit.license }}</a>
+              @if (secondaryImage.credit.modified) { · {{ t.inline('weboptimierte Version', 'web-optimised version', 'версия оптимизирована для сайта', 'versión optimizada para web', 'verzija optimizovana za veb') }} }
+            </figcaption>
+          </figure>
+        }
 
         <div class="horizon-divider" aria-hidden="true"></div>
 
@@ -48,10 +73,23 @@ import { GuideArticle, Locale } from '../../core/models/villa.model';
   styles: [`
     .breadcrumbs { padding-block: var(--space-2); font-size: 0.85rem; color: var(--c-olive); }
     .breadcrumbs a { color: var(--c-olive); }
-    .guide { padding-block: var(--space-3) var(--space-5); max-width: 760px; }
+    .guide { padding-block: var(--space-3) var(--space-5); max-width: 860px; }
+    .guide header { max-width: 760px; margin-inline: auto; }
     .meta { color: var(--c-olive); font-size: 0.85rem; }
-    .guide-body p { max-width: none; }
+    .guide-image { margin: var(--space-3) 0; }
+    .guide-image img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+    .guide-image-hero img { aspect-ratio: 16 / 9; }
+    .guide-image figcaption { margin-top: .65rem; color: var(--c-olive); font-size: .68rem; letter-spacing: .03em; }
+    .guide-image figcaption a { color: inherit; text-underline-offset: 3px; }
+    .guide-body { max-width: 760px; margin-inline: auto; }
+    .guide-body p { max-width: none; font-size: 1.04rem; line-height: 1.8; }
+    .guide-image-secondary { max-width: 760px; margin-inline: auto; }
     .related ul { padding-left: 1.1rem; margin-bottom: var(--space-3); }
+    @media (max-width: 640px) {
+      .guide-image { margin-inline: -1rem; }
+      .guide-image img { border-radius: 0; }
+      .guide-image figcaption { padding-inline: 1rem; }
+    }
   `],
 })
 export class GuideDetailComponent implements OnInit {
@@ -78,11 +116,12 @@ export class GuideDetailComponent implements OnInit {
         en: `guides/${this.guide.slug}`,
         ru: `guides/${this.guide.slug}`,
         es: `guides/${this.guide.slug}`,
+        sr: `guides/${this.guide.slug}`,
       },
       title: this.t.t(this.guide.seoTitle),
       description: this.t.t(this.guide.metaDescription),
-      ogImage: '/assets/media/lumina/lumina-hero-adriatic-sunset.webp',
-      ogImageAlt: this.t.inline('Blick über die Adria an der Budva Riviera', 'Adriatic view on the Budva Riviera', 'Вид на Адриатику на Будванской ривьере', 'Vista del Adriático en la Riviera de Budva'),
+      ogImage: this.guide.image.src,
+      ogImageAlt: this.t.t(this.guide.image.alt),
     });
 
     this.structuredData.setJsonLd('ld-guide', [
@@ -91,6 +130,7 @@ export class GuideDetailComponent implements OnInit {
         '@type': 'Article',
         headline: this.t.t(this.guide.title),
         description: this.t.t(this.guide.metaDescription),
+        image: this.guide.image.src,
         datePublished: this.guide.publishedOn,
         dateModified: this.guide.updatedOn,
         // PLACEHOLDER: replace with the real operator/author name before go-live
@@ -98,7 +138,7 @@ export class GuideDetailComponent implements OnInit {
       },
       this.structuredData.buildBreadcrumbGraph(
         [
-          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio' } as Record<Locale, string>)[locale], path: '' },
+          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio', sr: 'Početna' } as Record<Locale, string>)[locale], path: '' },
           { name: this.t.t(this.guide.title), path: `${routeBase}/${this.guide.slug}` },
         ],
         locale
@@ -108,6 +148,10 @@ export class GuideDetailComponent implements OnInit {
 
   protected locale(): Locale {
     return this.t.locale();
+  }
+
+  protected responsiveSrcSet(path: string): string {
+    return `${path.replace(/\.webp$/, '-720.webp')} 720w, ${path} 1440w`;
   }
 
   protected body(): string {

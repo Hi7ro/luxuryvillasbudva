@@ -217,7 +217,7 @@ export class AvailabilityCalendarComponent implements OnChanges {
     this.firstVisibleMonth.set(new Date(current.getFullYear(), current.getMonth() + offset, 1));
   }
   private formatShort(iso: string): string { return new Intl.DateTimeFormat(this.intlLocale(), { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${iso}T12:00:00`)); }
-  private intlLocale(): string { return ({ de: 'de-DE', en: 'en-GB', ru: 'ru-RU', es: 'es-ES' })[this.t.locale()]; }
+  private intlLocale(): string { return ({ de: 'de-DE', en: 'en-GB', ru: 'ru-RU', es: 'es-ES', sr: 'sr-Latn-RS' })[this.t.locale()]; }
   private toIso(date: Date): string { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
   private startOfDay(date: Date): Date { return new Date(date.getFullYear(), date.getMonth(), date.getDate()); }
 

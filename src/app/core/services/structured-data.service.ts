@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Villa, VillaFaqItem, Locale } from '../models/villa.model';
+import { Villa, VillaFaqItem, Locale, LocalizedText } from '../models/villa.model';
+import { translateEnglishToSerbian } from '../data/serbian-translations.data';
 
 @Injectable({ providedIn: 'root' })
 export class StructuredDataService {
@@ -34,7 +35,7 @@ export class StructuredDataService {
       additionalType: 'Villa',
       identifier: villa.slug,
       name: villa.name,
-      description: villa.metaDescription[locale] ?? villa.metaDescription.en,
+      description: this.localized(villa.metaDescription, locale),
       url,
       image: villa.galleryImagePlaceholders
         .filter((image) => image.startsWith('/assets/'))
@@ -68,7 +69,7 @@ export class StructuredDataService {
       },
       checkinTime: '16:00:00',
       checkoutTime: '11:00:00',
-      knowsLanguage: ['de', 'en', 'ru', 'es'],
+      knowsLanguage: ['de', 'en', 'ru', 'es', 'sr'],
     };
   }
 
@@ -78,8 +79,8 @@ export class StructuredDataService {
       '@type': 'FAQPage',
       mainEntity: items.map((item) => ({
         '@type': 'Question',
-        name: item.question[locale] ?? item.question.en,
-        acceptedAnswer: { '@type': 'Answer', text: item.answer[locale] ?? item.answer.en },
+        name: this.localized(item.question, locale),
+        acceptedAnswer: { '@type': 'Answer', text: this.localized(item.answer, locale) },
       })),
     };
   }
@@ -101,5 +102,12 @@ export class StructuredDataService {
     const origin = this.document.location?.origin;
     const base = origin && origin !== 'null' ? origin : 'http://localhost';
     return new URL(path, `${base.replace(/\/$/, '')}/`).toString().replace(/\/$/, '');
+  }
+
+  private localized(text: LocalizedText, locale: Locale): string {
+    if (locale === 'sr') {
+      return text.sr ?? translateEnglishToSerbian(text.en);
+    }
+    return text[locale] ?? text.en;
   }
 }

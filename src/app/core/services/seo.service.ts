@@ -33,7 +33,7 @@ export class SeoService {
     this.setTag('og:description', data.description, 'property');
     this.setTag('og:type', 'website', 'property');
     this.setTag('og:site_name', 'Villa MonteMare & Villa Lumina', 'property');
-    const ogLocales: Record<Locale, string> = { de: 'de_DE', en: 'en_US', ru: 'ru_RU', es: 'es_ES' };
+    const ogLocales: Record<Locale, string> = { de: 'de_DE', en: 'en_US', ru: 'ru_RU', es: 'es_ES', sr: 'sr_RS' };
     this.setTag('og:locale', ogLocales[data.locale], 'property');
     const canonicalUrl = this.absoluteUrl(data.locale, data.path);
     this.setTag('og:url', canonicalUrl, 'property');
@@ -68,11 +68,13 @@ export class SeoService {
       en: data.alternatePaths?.en ?? data.path,
       ru: data.alternatePaths?.ru ?? data.path,
       es: data.alternatePaths?.es ?? data.path,
+      sr: data.alternatePaths?.sr ?? data.path,
     };
     this.setHreflang('de', paths.de);
     this.setHreflang('en', paths.en);
     this.setHreflang('ru', paths.ru);
     this.setHreflang('es', paths.es);
+    this.setHreflang('sr', paths.sr);
     this.setHreflang('x-default', paths.de);
 
     this.document.documentElement.lang = data.locale;

@@ -136,7 +136,7 @@ function publicOrigin(req: express.Request): string {
 }
 
 function buildSitemap(origin: string): string {
-  const locales = ['de', 'en', 'ru', 'es'] as const;
+  const locales = ['de', 'en', 'ru', 'es', 'sr'] as const;
   type SitemapLocale = (typeof locales)[number];
   const groups: Array<Record<SitemapLocale, string>> = [];
   const localizedPaths = (factory: (locale: SitemapLocale) => string): Record<SitemapLocale, string> =>

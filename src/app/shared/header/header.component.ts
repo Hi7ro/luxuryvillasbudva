@@ -28,13 +28,14 @@ import { Locale } from '../../core/models/villa.model';
           <a [routerLink]="['/' + locale()]" fragment="kontakt" (click)="navigateToSection($event, 'kontakt')">{{ t.ui('navContact') }}</a>
 
           <label class="lang-switch">
-            <span class="visually-hidden">Sprache / Language / Язык / Idioma</span>
+            <span class="visually-hidden">Sprache / Language / Язык / Idioma / Jezik</span>
             <select [value]="locale()" (change)="switchLocaleFromSelect($event)"
-                    aria-label="Sprache / Language / Язык / Idioma">
+                    aria-label="Sprache / Language / Язык / Idioma / Jezik">
               <option value="de">Deutsch</option>
               <option value="en">English</option>
               <option value="ru">Русский</option>
               <option value="es">Español</option>
+              <option value="sr">Srpski</option>
             </select>
           </label>
 
@@ -173,7 +174,7 @@ export class HeaderComponent {
 
   private updateLocaleFromUrl(url: string): void {
     const segment = url.split('/').filter(Boolean)[0];
-    if (segment === 'de' || segment === 'en' || segment === 'ru' || segment === 'es') {
+    if (segment === 'de' || segment === 'en' || segment === 'ru' || segment === 'es' || segment === 'sr') {
       this.t.setLocale(segment);
     }
   }

@@ -1,4 +1,4 @@
-export type Locale = 'de' | 'en' | 'ru' | 'es';
+export type Locale = 'de' | 'en' | 'ru' | 'es' | 'sr';
 export type VillaSlug = 'villa-monte-mare' | 'villa-lumina';
 
 export interface LocalizedText {
@@ -6,6 +6,7 @@ export interface LocalizedText {
   en: string;
   ru?: string;
   es?: string;
+  sr?: string;
 }
 
 export interface VillaHighlight {
@@ -57,11 +58,26 @@ export interface GuideArticle {
   title: LocalizedText;
   excerpt: LocalizedText;
   bodyHtml: LocalizedText;
+  category: LocalizedText;
+  image: GuideImage;
+  secondaryImage?: GuideImage;
   publishedOn: string; // ISO date — placeholder, confirm before go-live
   updatedOn: string;
   relatedVillaSlugs: string[];
   seoTitle: LocalizedText;
   metaDescription: LocalizedText;
+}
+
+export interface GuideImage {
+  src: string;
+  alt: LocalizedText;
+  credit: {
+    author: string;
+    sourceUrl: string;
+    license: string;
+    licenseUrl: string;
+    modified?: boolean;
+  };
 }
 
 /** Inquiry payload sent from the booking widget */

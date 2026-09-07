@@ -1,11 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Locale, LocalizedText } from '../models/villa.model';
+import { translateEnglishToSerbian } from '../data/serbian-translations.data';
 
 /**
  * Lightweight runtime i18n for UI strings.
  *
  * Deliberately NOT using Angular's build-time @angular/localize pipeline:
- * with four languages and a small page count, a single runtime-switchable
+ * with five languages and a small page count, a single runtime-switchable
  * build is far cheaper to operate than separate localized builds/deploys.
  * Route-level locale segments (/de/.. and /en/..) still give each language
  * its own indexable, canonical URL for hreflang purposes.
@@ -89,23 +90,30 @@ export class TranslationService {
 
   /** Resolve a LocalizedText object for the current locale. */
   t(text: LocalizedText): string {
-    return text[this.localeSignal()] ?? text.en;
+    const locale = this.localeSignal();
+    if (locale === 'sr') return text.sr ?? translateEnglishToSerbian(text.en);
+    return text[locale] ?? text.en;
   }
 
   /** Resolve a predefined UI string key for the current locale. */
   ui(key: keyof typeof UI_STRINGS): string {
     const entry = UI_STRINGS[key];
-    return entry ? (entry[this.localeSignal()] ?? entry.en) : key;
+    if (!entry) return key;
+    const locale = this.localeSignal();
+    if (locale === 'sr') return entry.sr ?? translateEnglishToSerbian(entry.en);
+    return entry[locale] ?? entry.en;
   }
 
-  inline(de: string, en: string, ru: string, es: string): string {
-    return { de, en, ru, es }[this.localeSignal()];
+  inline(de: string, en: string, ru: string, es: string, sr?: string): string {
+    const locale = this.localeSignal();
+    if (locale === 'sr') return sr ?? translateEnglishToSerbian(en);
+    return { de, en, ru, es }[locale];
   }
 
   localizedPath(locale: Locale, path: string): string {
     const [pathAndQuery, fragment] = path.split('#', 2);
     const [pathname, query] = pathAndQuery.split('?', 2);
-    const stripped = pathname.replace(/^\/(de|en|ru|es)/, '');
+    const stripped = pathname.replace(/^\/(de|en|ru|es|sr)/, '');
     const parts = stripped.split('/').filter(Boolean);
     const sections: Record<string, string> = {
       villen: locale === 'de' ? 'villen' : 'villas',

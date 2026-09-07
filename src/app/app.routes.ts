@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   { path: '', redirectTo: 'de', pathMatch: 'full' },
 
-  ...(['de', 'en', 'ru', 'es'] as const).flatMap((locale) => [
+  ...(['de', 'en', 'ru', 'es', 'sr'] as const).flatMap((locale) => [
     {
       path: `${locale}/impressum`, data: { locale, page: 'imprint' },
       loadComponent: () => import('./features/legal/legal.component').then((m) => m.LegalComponent),
@@ -26,6 +26,7 @@ export const routes: Routes = [
   },
   { path: 'ru', data: { locale: 'ru' }, loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent) },
   { path: 'es', data: { locale: 'es' }, loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent) },
+  { path: 'sr', data: { locale: 'sr' }, loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent) },
 
   {
     path: 'de/villen/:slug',
@@ -39,6 +40,7 @@ export const routes: Routes = [
   },
   { path: 'ru/villas/:slug', data: { locale: 'ru' }, loadComponent: () => import('./features/villa-detail/villa-detail.component').then((m) => m.VillaDetailComponent) },
   { path: 'es/villas/:slug', data: { locale: 'es' }, loadComponent: () => import('./features/villa-detail/villa-detail.component').then((m) => m.VillaDetailComponent) },
+  { path: 'sr/villas/:slug', data: { locale: 'sr' }, loadComponent: () => import('./features/villa-detail/villa-detail.component').then((m) => m.VillaDetailComponent) },
 
   {
     path: 'de/lage-budva-riviera',
@@ -52,6 +54,7 @@ export const routes: Routes = [
   },
   { path: 'ru/location-budva-riviera', data: { locale: 'ru' }, loadComponent: () => import('./features/location/location.component').then((m) => m.LocationComponent) },
   { path: 'es/location-budva-riviera', data: { locale: 'es' }, loadComponent: () => import('./features/location/location.component').then((m) => m.LocationComponent) },
+  { path: 'sr/location-budva-riviera', data: { locale: 'sr' }, loadComponent: () => import('./features/location/location.component').then((m) => m.LocationComponent) },
 
   {
     path: 'de/reisefuehrer/:slug',
@@ -65,8 +68,9 @@ export const routes: Routes = [
   },
   { path: 'ru/guides/:slug', data: { locale: 'ru' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
   { path: 'es/guides/:slug', data: { locale: 'es' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
+  { path: 'sr/guides/:slug', data: { locale: 'sr' }, loadComponent: () => import('./features/guide-detail/guide-detail.component').then((m) => m.GuideDetailComponent) },
 
-  ...(['de', 'en', 'ru', 'es'] as const).map((locale) => ({
+  ...(['de', 'en', 'ru', 'es', 'sr'] as const).map((locale) => ({
     path: `${locale}/**`,
     data: { locale },
     loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),

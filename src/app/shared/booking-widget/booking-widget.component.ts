@@ -66,6 +66,8 @@ interface PriceLine { rate: number; nights: number; total: number; }
                   <li>{{ t.inline('Poolreinigungsservice', 'Pool cleaning service', 'Обслуживание и очистка бассейна', 'Servicio de limpieza de piscina') }}</li>
                   <li>{{ t.inline('Reinigungsservice', 'Housekeeping service', 'Услуги по уборке', 'Servicio de limpieza') }}</li>
                   <li>{{ t.inline('Gärtnerservice', 'Garden maintenance', 'Уход за садом', 'Servicio de jardinería') }}</li>
+                  <li>{{ t.inline('Strom', 'Electricity', 'Электричество', 'Electricidad', 'Struja') }}</li>
+                  <li>{{ t.inline('Wasser', 'Water', 'Вода', 'Agua', 'Voda') }}</li>
                 </ul>
                 <p>{{ t.inline('Für längere Aufenthalte auf Anfrage individuell planbar.', 'Individually arranged on request for longer stays.', 'Для длительного проживания услуги согласовываются индивидуально по запросу.', 'Disponibles bajo petición y organizados a medida para estancias largas.') }}</p>
             </section>
@@ -194,7 +196,7 @@ interface PriceLine { rate: number; nights: number; total: number; }
         }
 
         <footer class="drawer-contact">
-          <span class="contact-avatar" aria-hidden="true">M</span>
+          <img class="contact-avatar" src="/assets/media/people/michael.jpg" alt="" width="42" height="42" />
           <span>
             <strong>{{ t.inline('Direkt an Michael', 'Directly to Michael', 'Напрямую Михаэлю', 'Directamente a Michael') }}</strong>
             <small>{{ t.inline('Üblicherweise Antwort innerhalb von 2 Stunden', 'Usually replies within 2 hours', 'Обычно отвечает в течение 2 часов', 'Normalmente responde en 2 horas') }}</small>
@@ -299,7 +301,7 @@ interface PriceLine { rate: number; nights: number; total: number; }
     .drawer-success { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding-top: 2rem; }
     .drawer-success > span { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--c-champagne); color: var(--c-adria); font-size: 1.4rem; }
     .drawer-contact { display: flex; align-items: center; gap: .85rem; margin-top: auto; padding-top: .8rem; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.72); }
-    .contact-avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(145deg, var(--c-champagne), var(--c-terracotta)); color: #091c2d; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; box-shadow: 0 0 0 3px rgba(255,255,255,.06); }
+    .contact-avatar { display: block; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 50%; object-fit: cover; object-position: 50% 24%; box-shadow: 0 0 0 3px rgba(255,255,255,.08); }
     .drawer-contact > span:last-child { display: flex; flex-direction: column; line-height: 1.35; }
     .drawer-contact strong { color: white; font-size: .86rem; font-weight: 500; }
     .drawer-contact small { color: rgba(255,255,255,.48); font-size: .76rem; }
@@ -392,7 +394,7 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
   protected villaName(): string { return this.form.controls.villaSlug.value === 'villa-lumina' ? 'Villa Lumina' : 'Villa MonteMare'; }
   protected formatDate(iso: string): string {
     if (!iso) return '—';
-    const locale = ({ de: 'de-DE', en: 'en-GB', ru: 'ru-RU', es: 'es-ES' })[this.t.locale()];
+    const locale = ({ de: 'de-DE', en: 'en-GB', ru: 'ru-RU', es: 'es-ES', sr: 'sr-Latn-RS' })[this.t.locale()];
     return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${iso}T12:00:00`));
   }
   protected setDateRange(range: { checkIn: string; checkOut: string }): void {
@@ -462,7 +464,7 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
       window.open(`https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(body)}`, '_blank', 'noopener,noreferrer');
       this.trackWhatsapp();
     } else {
-      const subject = this.t.inline(`Anfrage ${this.villaName()}`, `Inquiry ${this.villaName()}`, `Запрос ${this.villaName()}`, `Solicitud ${this.villaName()}`);
+      const subject = this.t.inline(`Anfrage ${this.villaName()}`, `Inquiry ${this.villaName()}`, `Запрос ${this.villaName()}`, `Solicitud ${this.villaName()}`, `Upit ${this.villaName()}`);
       window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
     this.state.set('success');
@@ -482,6 +484,7 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
       en: ['Hello,', `I am interested in ${this.villaName()}.`, `Travel dates: ${dates}`, `Guests: ${raw.guests}`, `Reason for travel: ${reason}`, `Name: ${raw.firstName} ${raw.lastName}`, raw.contactPreference === 'whatsapp' ? `WhatsApp number: ${raw.phone}` : `Email: ${raw.email}`, raw.message ? `Additional message: ${raw.message}` : '', '', 'Please send me further information about availability.'],
       ru: ['Здравствуйте,', `Меня интересует ${this.villaName()}.`, `Даты поездки: ${dates}`, `Гости: ${raw.guests}`, `Цель поездки: ${reason}`, `Имя: ${raw.firstName} ${raw.lastName}`, raw.contactPreference === 'whatsapp' ? `Номер WhatsApp: ${raw.phone}` : `E-mail: ${raw.email}`, raw.message ? `Дополнительное сообщение: ${raw.message}` : '', '', 'Пожалуйста, сообщите подробности о доступности.'],
       es: ['Hola,', `Me interesa ${this.villaName()}.`, `Fechas del viaje: ${dates}`, `Huéspedes: ${raw.guests}`, `Motivo del viaje: ${reason}`, `Nombre: ${raw.firstName} ${raw.lastName}`, raw.contactPreference === 'whatsapp' ? `Número de WhatsApp: ${raw.phone}` : `Correo: ${raw.email}`, raw.message ? `Mensaje adicional: ${raw.message}` : '', '', 'Envíeme más información sobre la disponibilidad, por favor.'],
+      sr: ['Dobar dan,', `Zainteresovan/a sam za ${this.villaName()}.`, `Period putovanja: ${dates}`, `Gosti: ${raw.guests}`, `Razlog putovanja: ${reason}`, `Ime: ${raw.firstName} ${raw.lastName}`, raw.contactPreference === 'whatsapp' ? `WhatsApp broj: ${raw.phone}` : `E-mail: ${raw.email}`, raw.message ? `Dodatna poruka: ${raw.message}` : '', '', 'Molim vas da mi pošaljete više informacija o dostupnosti.'],
     }[this.t.locale()];
     return labels.filter(Boolean).join('\n');
   }
@@ -494,6 +497,7 @@ export class BookingWidgetComponent implements OnInit, OnDestroy {
       `Hi, I'm interested in ${this.villaName()} (${dates}, ${raw.guests || '?'} guests).`,
       `Здравствуйте, меня интересует ${this.villaName()} (${dates}, гостей: ${raw.guests || '?'}).`,
       `Hola, me interesa ${this.villaName()} (${dates}, ${raw.guests || '?'} huéspedes).`,
+      `Zdravo, zainteresovan/a sam za ${this.villaName()} (${dates}, ${raw.guests || '?'} gostiju).`,
     ));
     return `https://wa.me/${CONTACT.whatsappNumber}?text=${text}`;
   }

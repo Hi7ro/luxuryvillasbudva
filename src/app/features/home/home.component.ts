@@ -209,10 +209,25 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
       <h2>{{ t.inline('Erlebnisse & Reiseführer', 'Experiences & guides', 'Впечатления и путеводители', 'Experiencias y guías') }}</h2>
       <div class="guides-grid">
         @for (g of guides; track g.slug) {
-          <a class="guide-card" [routerLink]="guidePath(g.slug)">
-            <h3>{{ t.t(g.title) }}</h3>
-            <p>{{ t.t(g.excerpt) }}</p>
-          </a>
+          <article class="guide-card">
+            <a class="guide-card-main" [routerLink]="guidePath(g.slug)">
+              <div class="guide-card-image">
+                <img [src]="g.image.src" [srcset]="responsiveSrcSet(g.image.src)" sizes="(max-width: 700px) 100vw, 50vw"
+                     [alt]="t.t(g.image.alt)" width="1440" height="960" loading="lazy" />
+                <span>{{ t.t(g.category) }}</span>
+              </div>
+              <div class="guide-card-copy">
+                <h3>{{ t.t(g.title) }}</h3>
+                <p>{{ t.t(g.excerpt) }}</p>
+                <strong>{{ t.inline('Entdecken', 'Discover', 'Открыть', 'Descubrir', 'Otkrijte') }} <span aria-hidden="true">→</span></strong>
+              </div>
+            </a>
+            <p class="guide-card-credit">
+              {{ t.inline('Foto', 'Photo', 'Фото', 'Foto', 'Fotografija') }}:
+              <a [href]="g.image.credit.sourceUrl" target="_blank" rel="noopener">{{ g.image.credit.author }}</a>
+              · <a [href]="g.image.credit.licenseUrl" target="_blank" rel="noopener">{{ g.image.credit.license }}</a>
+            </p>
+          </article>
         }
       </div>
     </section>
@@ -351,10 +366,21 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
     .distances strong { color: var(--c-adria); }
 
     .guides-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
-    .guide-card { display: block; padding: clamp(1.5rem, 3vw, 2.25rem); border: 1px solid color-mix(in srgb, var(--c-sand) 76%, transparent); border-radius: var(--radius-lg); text-decoration: none; color: var(--c-anthracite); background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 300ms ease, border-color 300ms ease; }
-    .guide-card h3 { margin-bottom: 0.4rem; }
-    .guide-card p { color: var(--c-anthracite); font-size: 0.92rem; }
-    .guide-card:hover { border-color: var(--c-champagne); transform: translateY(-4px); }
+    .guide-card { overflow: hidden; border: 1px solid color-mix(in srgb, var(--c-sand) 76%, transparent); border-radius: var(--radius-lg); color: var(--c-anthracite); background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease; }
+    .guide-card-main { display: block; color: inherit; text-decoration: none; }
+    .guide-card-image { position: relative; overflow: hidden; aspect-ratio: 16 / 10; background: var(--c-sand); }
+    .guide-card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 750ms cubic-bezier(.2,.7,.2,1); }
+    .guide-card-image span { position: absolute; left: 1.25rem; bottom: 1.25rem; padding: .5rem .75rem; border-radius: 999px; color: var(--c-ivory); background: rgba(10,36,49,.82); backdrop-filter: blur(8px); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
+    .guide-card-copy { padding: clamp(1.5rem, 3vw, 2.25rem); }
+    .guide-card h3 { margin: 0 0 .65rem; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.08; }
+    .guide-card-copy p { margin: 0 0 1.25rem; color: var(--c-anthracite); font-size: 0.92rem; line-height: 1.7; }
+    .guide-card-copy strong { color: var(--c-adria); font-size: .8rem; letter-spacing: .05em; }
+    .guide-card-copy strong span { display: inline-block; margin-left: .3rem; transition: transform 180ms ease; }
+    .guide-card-credit { margin: 0; padding: 0 2.25rem 1.1rem; color: var(--c-olive); font-size: .62rem; }
+    .guide-card-credit a { color: inherit; text-underline-offset: 2px; }
+    .guide-card:hover { border-color: var(--c-champagne); transform: translateY(-5px); box-shadow: 0 24px 55px rgba(19,53,66,.13); }
+    .guide-card:hover .guide-card-image img { transform: scale(1.04); }
+    .guide-card:hover .guide-card-copy strong span { transform: translateX(4px); }
 
     .home-faq { max-width: 900px; }
     .faq { margin-top: var(--space-3); }
@@ -407,7 +433,7 @@ export class HomeComponent implements OnInit {
     '/assets/media/montemare/monte-mare-exterior-pool.webp',
     '/assets/media/lumina/lumina-exterior-pool.webp',
     '/assets/media/montemare/monte-mare-olive-garden.webp',
-    '/assets/media/lumina/lumina-rooftop-sea-view.webp',
+    '/assets/media/lumina/lumina-dining-area.webp',
   ];
   protected readonly homeGalleryAlt = (path: string): string => path.includes('pool')
     ? this.t.inline('Villa mit privatem Pool', 'Villa with private pool', 'Вилла с частным бассейном', 'Villa con piscina privada')
@@ -415,6 +441,8 @@ export class HomeComponent implements OnInit {
       ? this.t.inline('Mediterraner Olivengarten der Villa MonteMare', 'Mediterranean olive garden at Villa MonteMare', 'Средиземноморский сад Villa MonteMare', 'Jardín mediterráneo de Villa MonteMare')
     : path.includes('rooftop')
       ? this.t.inline('Dachterrasse mit Meerblick', 'Rooftop terrace with sea view', 'Терраса на крыше с видом на море', 'Azotea con vistas al mar')
+      : path.includes('dining')
+        ? this.t.inline('Heller Essbereich der Villa Lumina mit großem Holztisch', 'Bright dining area at Villa Lumina with a large wooden table', 'Светлая обеденная зона Villa Lumina с большим деревянным столом', 'Luminoso comedor de Villa Lumina con una gran mesa de madera', 'Svetla trpezarija vile Lumina sa velikim drvenim stolom')
       : path.includes('living')
         ? this.t.inline('Heller Wohnbereich der Villa Lumina', 'Bright living room at Villa Lumina', 'Светлая гостиная Villa Lumina', 'Salón luminoso de Villa Lumina')
         : this.t.inline('Schlafzimmer mit Meerblick', 'Bedroom with sea view', 'Спальня с видом на море', 'Dormitorio con vistas al mar');
@@ -426,18 +454,20 @@ export class HomeComponent implements OnInit {
     this.seo.setPage({
       locale,
       path: '',
-      alternatePaths: { de: '', en: '', ru: '', es: '' },
+      alternatePaths: { de: '', en: '', ru: '', es: '', sr: '' },
       title: ({
         de: 'Luxusvillen in Montenegro mit Pool | Budva Riviera',
         en: 'Luxury Villas in Montenegro with Pool | Budva Riviera',
         ru: 'Роскошные виллы с бассейном в Черногории | Будванская ривьера',
         es: 'Villas de lujo con piscina en Montenegro | Riviera de Budva',
+        sr: 'Luksuzne vile u Crnoj Gori sa bazenom | Budvanska rivijera',
       } as Record<Locale, string>)[locale],
       description: ({
         de: 'Entdecken Sie Villa MonteMare und Villa Lumina in Reževići: private Pools, Meerblick und Platz für je 6 Gäste nahe Budva und Sveti Stefan.',
         en: 'Discover Villa MonteMare and Villa Lumina in Reževići: private pools, sea views and room for up to 6 guests, near Budva and Sveti Stefan.',
         ru: 'Откройте для себя Villa MonteMare и Villa Lumina в Режевичи: частные бассейны, вид на море и размещение до 6 гостей рядом с Будвой и Свети-Стефаном.',
         es: 'Descubra Villa MonteMare y Villa Lumina en Reževići: piscinas privadas, vistas al mar y capacidad para 6 huéspedes cerca de Budva y Sveti Stefan.',
+        sr: 'Otkrijte vile MonteMare i Lumina u Reževićima: privatni bazeni, pogled na more i smeštaj za do 6 gostiju, blizu Budve i Svetog Stefana.',
       } as Record<Locale, string>)[locale],
       ogImage: '/assets/media/lumina/lumina-hero-adriatic-sunset.webp',
       ogImageAlt: this.heroAlt(),

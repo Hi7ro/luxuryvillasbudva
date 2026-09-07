@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -47,7 +48,7 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
             'До Старого города Будвы с многочисленными ресторанами, магазинами и рынками можно добраться примерно за 15 минут.',
             'El casco antiguo de Budva, con numerosos restaurantes, tiendas y mercados, se encuentra a unos 15 minutos.') }}</p>
           <div class="mobility-actions">
-            <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=HDL%20Smokov%20vijenac%20Drobni%C4%87i%20Montenegro" target="_blank" rel="noopener">
+            <a class="route-link" href="https://www.google.com/maps/dir/?api=1&amp;origin=42.239775685552246%2C18.903049972422934&amp;destination=HDL%20Smokov%20vijenac%20Drobni%C4%87i%20Montenegro&amp;travelmode=walking" target="_blank" rel="noopener">
               <span class="route-icon" aria-hidden="true">↗</span>
               <span>
                 <small>{{ t.inline('Einkaufen in der Nähe', 'Groceries nearby', 'Магазин поблизости', 'Supermercado cercano') }}</small>
@@ -152,20 +153,47 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       </div>
 
       <div class="map-wrap">
-        <iframe
-          src="https://www.google.com/maps?q=42.239775685552246%2C18.903049972422934&amp;z=18&amp;output=embed"
-
-          [title]="t.inline('Lage der Villen am Smokov vijenac auf Google Maps', 'Location of the villas at Smokov vijenac on Google Maps', 'Расположение вилл на Smokov vijenac в Google Maps', 'Ubicación de las villas en Smokov vijenac en Google Maps')"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen>
-        </iframe>
+        @if (mapConsent()) {
+          <iframe
+            src="https://www.google.com/maps?q=42.239775685552246%2C18.903049972422934&amp;z=18&amp;output=embed"
+            [title]="t.inline('Lage der Villen am Smokov vijenac auf Google Maps', 'Location of the villas at Smokov vijenac on Google Maps', 'Расположение вилл на Smokov vijenac в Google Maps', 'Ubicación de las villas en Smokov vijenac en Google Maps')"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen>
+          </iframe>
+        } @else {
+          <div class="map-consent" role="region" [attr.aria-label]="t.inline('Google Maps Datenschutzeinstellungen', 'Google Maps privacy settings', 'Настройки конфиденциальности Google Maps', 'Ajustes de privacidad de Google Maps')">
+            <span class="map-consent-pin" aria-hidden="true">⌖</span>
+            <p class="eyebrow">Google Maps</p>
+            <h3>{{ t.inline('Karte erst nach Zustimmung laden', 'Load the map after consent', 'Загрузить карту после согласия', 'Cargar el mapa tras dar tu consentimiento') }}</h3>
+            <p>{{ t.inline(
+              'Zum Schutz deiner Privatsphäre wird die Karte nicht automatisch geladen. Mit dem Aktivieren stellst du eine Verbindung zu Google her; dabei können personenbezogene Daten verarbeitet und in Drittländer übertragen werden.',
+              'To protect your privacy, the map is not loaded automatically. Activating it establishes a connection to Google; personal data may be processed and transferred to third countries.',
+              'Для защиты вашей конфиденциальности карта не загружается автоматически. После активации устанавливается соединение с Google; персональные данные могут обрабатываться и передаваться в третьи страны.',
+              'Para proteger tu privacidad, el mapa no se carga automáticamente. Al activarla se establece una conexión con Google; pueden tratarse datos personales y transferirse a terceros países.') }}</p>
+            <button class="btn btn-primary" type="button" (click)="enableMap()">
+              {{ t.inline('Google Maps aktivieren', 'Enable Google Maps', 'Включить Google Maps', 'Activar Google Maps') }}
+            </button>
+            <p class="map-consent-links">
+              <a [routerLink]="privacyPath()">{{ t.inline('Datenschutzerklärung', 'Privacy policy', 'Политика конфиденциальности', 'Política de privacidad') }}</a>
+              <span aria-hidden="true">·</span>
+              <a [href]="googlePrivacyUrl()" target="_blank" rel="noopener">{{ t.inline('Datenschutz bei Google', 'Google Privacy Policy', 'Политика конфиденциальности Google', 'Privacidad de Google') }}</a>
+            </p>
+          </div>
+        }
         <div class="map-caption">
           <p>{{ t.inline('Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, Budva Municipality, 85315, Montenegro', 'Smokov vijenac, Drobnići, муниципалитет Будва, 85315, Черногория', 'Smokov vijenac, Drobnići, municipio de Budva, 85315, Montenegro') }}</p>
-          <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=42.239775685552246%2C18.903049972422934"
-             target="_blank" rel="noopener">
-            {{ t.inline('In Google Maps öffnen', 'Open in Google Maps', 'Открыть в Google Maps', 'Abrir en Google Maps') }}
-          </a>
+          <div class="map-caption-actions">
+            @if (mapConsent()) {
+              <button class="map-revoke" type="button" (click)="revokeMapConsent()">
+                {{ t.inline('Einwilligung widerrufen', 'Withdraw consent', 'Отозвать согласие', 'Retirar consentimiento') }}
+              </button>
+            }
+            <a class="btn btn-quiet" href="https://www.google.com/maps/search/?api=1&amp;query=42.239775685552246%2C18.903049972422934"
+               target="_blank" rel="noopener">
+              {{ t.inline('In Google Maps öffnen', 'Open in Google Maps', 'Открыть в Google Maps', 'Abrir en Google Maps') }}
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -223,9 +251,20 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
     .distances strong { color: var(--c-adria); }
     .map-wrap { overflow: hidden; border: 1px solid color-mix(in srgb, var(--c-sand) 75%, transparent); border-radius: var(--radius-lg); background: var(--c-ivory); box-shadow: var(--shadow-lifted); }
     .map-wrap iframe { display: block; width: 100%; height: clamp(360px, 52vw, 600px); border: 0; }
+    .map-consent { display: grid; place-items: center; align-content: center; min-height: clamp(360px, 52vw, 600px); padding: clamp(2rem, 6vw, 5rem); text-align: center; background: radial-gradient(circle at 50% 42%, rgba(215,190,137,.2), transparent 28%), linear-gradient(135deg, rgba(23,50,63,.97), #0e2732); color: rgba(255,255,255,.78); }
+    .map-consent-pin { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin-bottom: 1.25rem; border: 1px solid var(--c-champagne); border-radius: 50%; color: var(--c-champagne); font-size: 1.7rem; }
+    .map-consent .eyebrow { margin-bottom: .7rem; color: var(--c-champagne); }
+    .map-consent h3 { max-width: 20ch; margin: 0 0 1rem; color: var(--c-limestone); font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.05; text-wrap: balance; }
+    .map-consent > p:not(.eyebrow, .map-consent-links) { max-width: 66ch; margin: 0 0 1.5rem; line-height: 1.7; }
+    .map-consent .btn { min-width: min(100%, 250px); }
+    .map-consent-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; margin: 1.2rem 0 0; font-size: .78rem; }
+    .map-consent-links a { color: rgba(255,255,255,.78); text-underline-offset: .2em; }
     .map-caption { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) var(--space-3); }
     .map-caption p { margin: 0; color: var(--c-olive); font-size: 0.9rem; max-width: 70ch; }
     .map-caption .btn { flex: 0 0 auto; }
+    .map-caption-actions { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; flex: 0 0 auto; }
+    .map-revoke { padding: .35rem 0; border: 0; background: transparent; color: var(--c-olive); font: inherit; font-size: .75rem; text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
+    .map-revoke:hover { color: var(--c-adria); }
     @media (max-width: 900px) {
       .location-grid { grid-template-columns: 1fr; }
       .location-aside { position: static; display: grid; grid-template-columns: 1fr 1fr; }
@@ -244,8 +283,10 @@ import { Locale, LocalizedText } from '../../core/models/villa.model';
       .distances strong { white-space: nowrap; }
       .map-wrap { border-radius: 10px; }
       .map-wrap iframe { height: 420px; }
+      .map-consent { min-height: 420px; padding: 2rem 1.25rem; }
       .map-caption { align-items: stretch; flex-direction: column; padding: 1rem; }
       .map-caption .btn { width: 100%; justify-content: center; }
+      .map-caption-actions { align-items: stretch; flex-direction: column-reverse; gap: .5rem; }
     }
   `],
 })
@@ -254,6 +295,10 @@ export class LocationComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly structuredData = inject(StructuredDataService);
   private readonly route = inject(ActivatedRoute);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly mapConsentStorageKey = 'villa-google-maps-consent';
+
+  protected readonly mapConsent = signal(false);
 
   protected readonly distances = DISTANCES;
   protected readonly nearbyBeaches: Array<{ name: string; primaryTime: LocalizedText; secondaryTime?: LocalizedText }> = [
@@ -283,6 +328,9 @@ export class LocationComponent implements OnInit {
   ngOnInit(): void {
     const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
     this.t.setLocale(locale);
+    if (isPlatformBrowser(this.platformId)) {
+      this.mapConsent.set(localStorage.getItem(this.mapConsentStorageKey) === 'granted');
+    }
     const path = locale === 'de' ? 'lage-budva-riviera' : 'location-budva-riviera';
 
     this.seo.setPage({
@@ -293,18 +341,21 @@ export class LocationComponent implements OnInit {
         en: 'location-budva-riviera',
         ru: 'location-budva-riviera',
         es: 'location-budva-riviera',
+        sr: 'location-budva-riviera',
       },
       title: ({
         de: 'Reževići & Budva Riviera: Lage der Luxusvillen',
         en: 'Reževići & Budva Riviera: Luxury Villa Location',
         ru: 'Режевичи и Будванская ривьера: расположение вилл',
         es: 'Reževići y Riviera de Budva: ubicación de las villas',
+        sr: 'Reževići i Budvanska rivijera: lokacija luksuznih vila',
       } as Record<Locale, string>)[locale],
       description: ({
         de: 'Ruhige Villenlage in Reževići, 90 Meter über der Adria: nahe Drobni Pijesak, Sveti Stefan und Budva sowie Einkaufsmöglichkeiten und Restaurants.',
         en: 'Peaceful villa location in Reževići, 90 metres above the Adriatic: close to Drobni Pijesak, Sveti Stefan, Budva, shops and restaurants.',
         ru: 'Тихое расположение вилл в Режевичи, в 90 метрах над Адриатикой: рядом с Дробни-Пиесак, Свети-Стефаном, Будвой, магазинами и ресторанами.',
         es: 'Villas en una zona tranquila de Reževići, a 90 metros sobre el Adriático: cerca de Drobni Pijesak, Sveti Stefan, Budva, tiendas y restaurantes.',
+        sr: 'Mirna lokacija vila u Reževićima, 90 metara iznad Jadrana: blizu Drobnog Pijeska, Svetog Stefana, Budve, prodavnica i restorana.',
       } as Record<Locale, string>)[locale],
       ogImage: '/assets/media/lumina/lumina-aerial-location.webp',
       ogImageAlt: this.t.inline('Lage der Villen an der Budva Riviera', 'Villa location on the Budva Riviera', 'Расположение вилл на Будванской ривьере', 'Ubicación de las villas en la Riviera de Budva'),
@@ -314,8 +365,8 @@ export class LocationComponent implements OnInit {
       'ld-location',
       [this.structuredData.buildBreadcrumbGraph(
         [
-          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio' } as Record<Locale, string>)[locale], path: '' },
-          { name: ({ de: 'Lage', en: 'Location', ru: 'Расположение', es: 'Ubicación' } as Record<Locale, string>)[locale], path },
+          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio', sr: 'Početna' } as Record<Locale, string>)[locale], path: '' },
+          { name: ({ de: 'Lage', en: 'Location', ru: 'Расположение', es: 'Ubicación', sr: 'Lokacija' } as Record<Locale, string>)[locale], path },
         ],
         locale
       )]
@@ -324,6 +375,28 @@ export class LocationComponent implements OnInit {
 
   protected locale(): Locale {
     return this.t.locale();
+  }
+
+  protected enableMap(): void {
+    this.mapConsent.set(true);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.mapConsentStorageKey, 'granted');
+    }
+  }
+
+  protected revokeMapConsent(): void {
+    this.mapConsent.set(false);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.mapConsentStorageKey);
+    }
+  }
+
+  protected privacyPath(): string {
+    return `/${this.locale()}/datenschutz`;
+  }
+
+  protected googlePrivacyUrl(): string {
+    return `https://policies.google.com/privacy?hl=${this.locale()}`;
   }
 
 }

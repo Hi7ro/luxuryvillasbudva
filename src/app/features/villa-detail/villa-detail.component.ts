@@ -124,7 +124,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
           <p>{{ t.inline('Wählen Sie ein Bild, um die Galerie im Vollbild zu öffnen.', 'Select an image to open the full-screen gallery.', 'Выберите фотографию, чтобы открыть полноэкранную галерею.', 'Selecciona una imagen para abrir la galería a pantalla completa.') }}</p>
         </div>
         <div class="gallery" [attr.aria-label]="t.inline('Bildergalerie', 'Image gallery', 'Фотогалерея', 'Galería de imágenes')">
-          @for (img of villa.galleryImagePlaceholders; track img) {
+          @for (img of visibleGalleryImages(); track img) {
             @if (img.startsWith('/assets/')) {
               <button class="gallery-item" type="button" (click)="villaLightbox.open($index)" [attr.aria-label]="galleryAlt(img)">
                 <img [src]="img" [srcset]="responsiveSrcSet(img)" sizes="(max-width: 560px) 50vw, 40vw"
@@ -136,6 +136,16 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
             }
           }
         </div>
+        @if (villa.galleryImagePlaceholders.length > 15) {
+          <div class="gallery-more">
+            <button class="btn btn-quiet" type="button" (click)="allGalleryImagesVisible.set(!allGalleryImagesVisible())">
+              {{ allGalleryImagesVisible()
+                ? t.inline('Weniger Fotos anzeigen', 'Show fewer photos', 'Показать меньше фотографий', 'Mostrar menos fotos', 'Prikaži manje fotografija')
+                : t.inline('Alle Fotos anzeigen', 'Show all photos', 'Показать все фотографии', 'Mostrar todas las fotos', 'Prikaži sve fotografije') }}
+              @if (!allGalleryImagesVisible()) { <span aria-hidden="true">({{ villa.galleryImagePlaceholders.length }})</span> }
+            </button>
+          </div>
+        }
       </section>
 
       @if (villa.slug === 'villa-lumina') {
@@ -186,11 +196,21 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
             <p class="eyebrow">{{ t.inline('Länger bleiben', 'Stay a little longer', 'Остаться подольше', 'Quédate un poco más') }}</p>
             <h2>{{ t.inline('Workation über der Adria', 'Workation above the Adriatic', 'Работа над Адриатикой', 'Teletrabajo sobre el Adriático') }}</h2>
             <p>
-              {{ t.inline(
-                'Villa Lumina eignet sich mit separatem Arbeitsbereich, Getränkeküche und schnellem Glasfaser-Internet gezielt für längere, arbeitsintensive Aufenthalte.',
-                'With a separate work area, kitchenette and fast fibre internet, Villa Lumina is well suited to longer, work-intensive stays.',
-                'Благодаря отдельной рабочей зоне, мини-кухне и быстрому оптоволоконному интернету Villa Lumina отлично подходит для длительного проживания и удалённой работы.',
-                'Con una zona de trabajo independiente, pequeña cocina e internet de fibra rápida, Villa Lumina es ideal para estancias largas con teletrabajo.') }}
+              @if (villa.slug === 'villa-monte-mare') {
+                {{ t.inline(
+                  'Villa MonteMare bietet einen separaten Arbeitsbereich mit Schreibtisch und Getränkeküche, zuverlässiges WLAN sowie viel Ruhe und Privatsphäre – ideal für einzelne Arbeitstage und längere Workations.',
+                  'Villa MonteMare offers a separate workspace with a desk and refreshment kitchenette, reliable WiFi, and plenty of peace and privacy – ideal for occasional remote-working days and longer workations.',
+                  'Villa MonteMare располагает отдельной рабочей зоной с письменным столом и небольшой кухней для напитков, надёжным Wi‑Fi, тишиной и приватностью — идеальные условия как для отдельных рабочих дней, так и для длительной удалённой работы.',
+                  'Villa MonteMare ofrece una zona de trabajo independiente con escritorio y pequeña cocina para bebidas, Wi‑Fi fiable y mucha tranquilidad y privacidad, ideal tanto para días puntuales de teletrabajo como para estancias de workation más largas.',
+                  'Vila MonteMare nudi odvojen radni prostor sa radnim stolom i malom čajnom kuhinjom, pouzdan WiFi, kao i mnogo mira i privatnosti – idealno za povremeni rad na daljinu i duže radne boravke.') }}
+              } @else {
+                {{ t.inline(
+                  'Villa Lumina eignet sich mit separatem Arbeitsbereich, eigener kleiner Küche und schnellem Glasfaser-Internet gezielt für längere, arbeitsintensive Aufenthalte.',
+                  'With a separate workspace, its own small kitchen and fast fibre internet, Villa Lumina is particularly well suited to longer, work-intensive stays.',
+                  'Благодаря отдельной рабочей зоне, собственной мини-кухне и быстрому оптоволоконному интернету Villa Lumina отлично подходит для длительного проживания и удалённой работы.',
+                  'Con una zona de trabajo independiente, su propia pequeña cocina e internet de fibra rápida, Villa Lumina resulta especialmente adecuada para estancias largas con teletrabajo.',
+                  'Sa odvojenim radnim prostorom, sopstvenom malom kuhinjom i brzim optičkim internetom, Vila Lumina je posebno pogodna za duže boravke uz rad na daljinu.') }}
+              }
             </p>
           }
 
@@ -217,12 +237,37 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
             }
           </dl>
 
-          <h2>{{ t.ui('relatedGuides') }}</h2>
-          <ul class="related-guides">
-            @for (g of relatedGuides(); track g.slug) {
-              <li><a [routerLink]="guidePath(g.slug)">{{ t.t(g.title) }}</a></li>
-            }
-          </ul>
+          <section class="related-guides-section" aria-labelledby="related-guides-title">
+            <p class="eyebrow">{{ t.inline('Die Budva Riviera entdecken', 'Discover the Budva Riviera', 'Откройте Будванскую ривьеру', 'Descubre la Riviera de Budva', 'Otkrijte Budvansku rivijeru') }}</p>
+            <div class="related-guides-heading">
+              <h2 id="related-guides-title">{{ t.ui('relatedGuides') }}</h2>
+              <p>{{ t.inline('Unsere Empfehlungen für besondere Tage am Meer und genussvolle Abende in Budva.', 'Our recommendations for memorable days by the sea and enjoyable evenings in Budva.', 'Наши рекомендации для незабываемых дней у моря и приятных вечеров в Будве.', 'Nuestras recomendaciones para días inolvidables junto al mar y noches especiales en Budva.', 'Naše preporuke za nezaboravne dane uz more i prijatne večeri u Budvi.') }}</p>
+            </div>
+            <div class="related-guides-grid">
+              @for (g of relatedGuides(); track g.slug; let number = $index) {
+                <article class="related-guide-card">
+                  <a class="related-guide-link" [routerLink]="guidePath(g.slug)">
+                    <div class="related-guide-image">
+                      <img [src]="g.image.src" [srcset]="responsiveSrcSet(g.image.src)" sizes="(max-width: 700px) 100vw, 390px"
+                           [alt]="t.t(g.image.alt)" width="1440" height="960" loading="lazy" />
+                      <span>{{ t.t(g.category) }}</span>
+                    </div>
+                    <div class="related-guide-copy">
+                      <small>{{ (number + 1).toString().padStart(2, '0') }}</small>
+                      <h3>{{ t.t(g.title) }}</h3>
+                      <p>{{ t.t(g.excerpt) }}</p>
+                      <strong>{{ t.inline('Reiseführer lesen', 'Read the guide', 'Читать путеводитель', 'Leer la guía', 'Pročitajte vodič') }} <span aria-hidden="true">→</span></strong>
+                    </div>
+                  </a>
+                  <p class="related-guide-credit">
+                    {{ t.inline('Foto', 'Photo', 'Фото', 'Foto', 'Fotografija') }}:
+                    <a [href]="g.image.credit.sourceUrl" target="_blank" rel="noopener">{{ g.image.credit.author }}</a>
+                    · <a [href]="g.image.credit.licenseUrl" target="_blank" rel="noopener">{{ g.image.credit.license }}</a>
+                  </p>
+                </article>
+              }
+            </div>
+          </section>
 
           <p class="other-villa">
             <a [routerLink]="otherVillaPath()">
@@ -332,6 +377,7 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 700ms cubic-bezier(.2,.7,.2,1); }
     .gallery-item:hover img { transform: scale(1.045); }
     .gallery-item > span { position: absolute; right: 1rem; bottom: .75rem; color: white; font-size: .72rem; letter-spacing: .16em; text-shadow: 0 1px 10px rgba(0,0,0,.7); }
+    .gallery-more { display: flex; justify-content: center; margin-top: 2rem; }
     .highlight-section { background: var(--c-adria); color: rgba(255,255,255,.78); }
     .light-heading h2, .amenities-panel h2 { color: var(--c-ivory); }
     .light-heading .eyebrow, .amenities-panel .eyebrow { color: var(--c-champagne); }
@@ -357,7 +403,6 @@ import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightb
     .faq-item dt { font-weight: 600; color: var(--c-adria); }
     .faq-item dd { margin: 0; }
 
-    .related-guides { padding-left: 1.1rem; }
     .other-villa { margin-top: var(--space-4); }
 
     .mobile-sticky-cta { display: none; }
@@ -438,6 +483,7 @@ export class VillaDetailComponent implements OnInit {
 
   protected readonly distances = DISTANCES;
   protected readonly showMobileCta = signal(false);
+  protected readonly allGalleryImagesVisible = signal(false);
   protected villa: Villa | undefined;
   protected otherVilla: Villa | undefined;
 
@@ -467,6 +513,7 @@ export class VillaDetailComponent implements OnInit {
         en: `villas/${this.villa.slug}`,
         ru: `villas/${this.villa.slug}`,
         es: `villas/${this.villa.slug}`,
+        sr: `villas/${this.villa.slug}`,
       },
       title: this.t.t(this.villa.seoTitle),
       description: this.t.t(this.villa.metaDescription),
@@ -479,7 +526,7 @@ export class VillaDetailComponent implements OnInit {
       this.structuredData.buildFaqGraph(this.villa.faq, locale),
       this.structuredData.buildBreadcrumbGraph(
         [
-          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio' } as Record<Locale, string>)[locale], path: '' },
+          { name: ({ de: 'Start', en: 'Home', ru: 'Главная', es: 'Inicio', sr: 'Početna' } as Record<Locale, string>)[locale], path: '' },
           { name: this.villa.name, path: `${routeBase}/${this.villa.slug}` },
         ],
         locale
@@ -536,6 +583,11 @@ export class VillaDetailComponent implements OnInit {
     return this.villa?.galleryImagePlaceholders[2] ?? this.heroImage();
   }
 
+  protected visibleGalleryImages(): string[] {
+    const images = this.villa?.galleryImagePlaceholders ?? [];
+    return this.allGalleryImagesVisible() ? images : images.slice(0, 15);
+  }
+
   protected atmosphereLine(): string {
     return this.t.inline(
       'Morgens Licht über den Bergen. Abends Ruhe über der Adria.',
@@ -550,15 +602,15 @@ export class VillaDetailComponent implements OnInit {
   }
 
   protected galleryAlt(path: string): string {
-    const subject = path.includes('sunset') ? ['Meerblick bei Sonnenuntergang', 'Adriatic view at sunset', 'Вид на Адриатику на закате', 'Vista del Adriático al atardecer']
-      : path.includes('exterior-pool') ? ['Außenansicht mit privatem Pool', 'Exterior with private pool', 'Вилла с частным бассейном', 'Exterior con piscina privada']
-      : path.includes('rooftop') ? ['Dachterrasse mit Meerblick', 'Rooftop terrace with sea view', 'Терраса на крыше с видом на море', 'Azotea con vistas al mar']
-      : path.includes('living') ? ['Heller Wohnbereich', 'Bright living room', 'Светлая гостиная', 'Salón luminoso']
-      : path.includes('dining') ? ['Essbereich und offene Küche', 'Dining area and open kitchen', 'Обеденная зона и открытая кухня', 'Comedor y cocina abierta']
-      : path.includes('bedroom') ? ['Schlafzimmer mit Meerblick', 'Bedroom with sea view', 'Спальня с видом на море', 'Dormitorio con vistas al mar']
-      : path.includes('bathroom') ? ['Modernes Badezimmer', 'Modern bathroom', 'Современная ванная комната', 'Baño moderno']
-      : ['Private Luxusvilla in Reževići', 'Private luxury villa in Reževići', 'Частная вилла класса люкс в Режевичи', 'Villa privada de lujo en Reževići'];
-    const index: Record<Locale, number> = { de: 0, en: 1, ru: 2, es: 3 };
+    const subject = path.includes('sunset') ? ['Meerblick bei Sonnenuntergang', 'Adriatic view at sunset', 'Вид на Адриатику на закате', 'Vista del Adriático al atardecer', 'Pogled na Jadran pri zalasku sunca']
+      : path.includes('exterior-pool') ? ['Außenansicht mit privatem Pool', 'Exterior with private pool', 'Вилла с частным бассейном', 'Exterior con piscina privada', 'Eksterijer sa privatnim bazenom']
+      : path.includes('rooftop') ? ['Dachterrasse mit Meerblick', 'Rooftop terrace with sea view', 'Терраса на крыше с видом на море', 'Azotea con vistas al mar', 'Krovna terasa sa pogledom na more']
+      : path.includes('living') ? ['Heller Wohnbereich', 'Bright living room', 'Светлая гостиная', 'Salón luminoso', 'Svetao dnevni boravak']
+      : path.includes('dining') ? ['Essbereich und offene Küche', 'Dining area and open kitchen', 'Обеденная зона и открытая кухня', 'Comedor y cocina abierta', 'Trpezarija i otvorena kuhinja']
+      : path.includes('bedroom') ? ['Schlafzimmer mit Meerblick', 'Bedroom with sea view', 'Спальня с видом на море', 'Dormitorio con vistas al mar', 'Spavaća soba sa pogledom na more']
+      : path.includes('bathroom') ? ['Modernes Badezimmer', 'Modern bathroom', 'Современная ванная комната', 'Baño moderno', 'Moderno kupatilo']
+      : ['Private Luxusvilla in Reževići', 'Private luxury villa in Reževići', 'Частная вилла класса люкс в Режевичи', 'Villa privada de lujo en Reževići', 'Privatna luksuzna vila u Reževićima'];
+    const index: Record<Locale, number> = { de: 0, en: 1, ru: 2, es: 3, sr: 4 };
     return `${subject[index[this.locale()]]} – ${this.villa?.name ?? 'Villa'}`;
   }
 
