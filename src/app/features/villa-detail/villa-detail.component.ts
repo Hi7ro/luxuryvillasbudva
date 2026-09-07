@@ -499,7 +499,7 @@ export class VillaDetailComponent implements OnInit {
   }
 
   private loadVilla(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'en';
     this.t.setLocale(locale);
     this.allGalleryImagesVisible.set(false);
     this.showMobileCta.set(false);

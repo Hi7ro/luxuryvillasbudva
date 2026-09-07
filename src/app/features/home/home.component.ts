@@ -4,7 +4,7 @@ import { TranslationService } from '../../core/services/translation.service';
 import { SeoService } from '../../core/services/seo.service';
 import { StructuredDataService } from '../../core/services/structured-data.service';
 import { VILLAS, DISTANCES, GUIDE_ARTICLES } from '../../core/data/content.data';
-import { Locale } from '../../core/models/villa.model';
+import { Locale, LocalizedText } from '../../core/models/villa.model';
 import { BookingWidgetComponent } from '../../shared/booking-widget/booking-widget.component';
 import { ImageLightboxComponent } from '../../shared/image-lightbox/image-lightbox.component';
 import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.component';
@@ -104,13 +104,13 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
     <section class="section container" id="galerie">
       <p class="eyebrow">MonteMare &amp; Lumina</p>
       <h2>{{ t.inline('Zwei Villen – eine besondere Perspektive', 'Two villas – one exceptional perspective', 'Две виллы — один особенный ракурс', 'Dos villas, una perspectiva excepcional') }}</h2>
-      <app-image-lightbox #homeLightbox [images]="homeGalleryImages" [altText]="homeGalleryAlt"
+      <app-image-lightbox #homeLightbox [images]="homeGallerySrcs()" [altText]="homeGalleryAlt"
         [label]="t.inline('Bildergalerie der Villen', 'Villa image gallery', 'Фотогалерея вилл', 'Galería de las villas')" />
       <div class="home-gallery">
-        @for (image of homeGalleryImages; track image) {
-          <button type="button" (click)="homeLightbox.open($index)" [attr.aria-label]="homeGalleryAlt(image)">
-            <img [src]="image" [srcset]="responsiveSrcSet(image)" sizes="(max-width: 700px) 100vw, 40vw"
-                 [alt]="homeGalleryAlt(image)" width="1920" height="1280" loading="lazy" />
+        @for (image of homeGalleryImages; track image.src) {
+          <button type="button" (click)="homeLightbox.open($index)" [attr.aria-label]="t.t(image.alt)">
+            <img [src]="image.src" [srcset]="responsiveSrcSet(image.src)" sizes="(max-width: 640px) 80vw, (max-width: 900px) 45vw, 30vw"
+                 [alt]="t.t(image.alt)" width="1920" height="1280" loading="lazy" />
           </button>
         }
       </div>
@@ -304,10 +304,11 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
     .hero-ctas { display: flex; gap: var(--space-2); margin-top: var(--space-3); flex-wrap: wrap; }
     .hero-horizon { position: absolute; z-index: 2; bottom: 0; margin: 0; background: color-mix(in srgb, var(--c-limestone) 30%, transparent); }
 
-    .villa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-3); }
-    .villa-card { border: 1px solid color-mix(in srgb, var(--c-sand) 72%, transparent); border-radius: var(--radius-lg); overflow: hidden; background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 400ms ease, box-shadow 400ms ease; }
+    .villa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-3); align-items: stretch; }
+    .villa-card { display: flex; flex-direction: column; border: 1px solid color-mix(in srgb, var(--c-sand) 72%, transparent); border-radius: var(--radius-lg); overflow: hidden; background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 400ms ease, box-shadow 400ms ease; }
     .villa-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lifted); }
     .villa-media {
+      flex: 0 0 auto;
       width: 100%;
       aspect-ratio: 4 / 3;
       overflow: hidden;
@@ -320,18 +321,18 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
       object-fit: cover;
       object-position: center center;
     }
-    .villa-body { padding: clamp(1.5rem, 3vw, 2.5rem); }
+    /* Flex column so the price row and the CTAs land at the same height across cards. */
+    .villa-body { flex: 1 1 auto; display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 2.5rem); }
+    .villa-body > p:not(.villa-price) { flex: 1 1 auto; }
     .villa-price { color: var(--c-adria); margin-block: var(--space-2); }
     .villa-price strong { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; }
     .facts { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: var(--space-2) 0; font-size: 0.88rem; color: var(--c-olive); }
     .villa-ctas { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-2); }
 
-    .home-gallery { display: grid; grid-template-columns: 1.35fr 1fr 1fr; grid-template-rows: repeat(2, 230px); gap: var(--space-1); margin-top: var(--space-3); }
-    .home-gallery button { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; overflow: hidden; border-radius: var(--radius-lg); }
+    .home-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(190px, 22vw, 240px), 1fr)); gap: var(--space-1); margin-top: var(--space-3); }
+    .home-gallery button { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 0; background: transparent; cursor: zoom-in; overflow: hidden; border-radius: var(--radius-lg); }
     .home-gallery img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease; }
     .home-gallery button:hover img { transform: scale(1.025); }
-    .home-gallery button:first-child { grid-row: 1 / 3; }
-    .home-gallery button:nth-child(2) { grid-column: 2 / 4; }
     .gallery-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: var(--space-3); }
 
     .compare-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: clamp(1rem, 2.5vw, 2rem); margin-top: var(--space-3); align-items: stretch; }
@@ -365,15 +366,16 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
     .distances li { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--c-sand); padding-bottom: 0.35rem; }
     .distances strong { color: var(--c-adria); }
 
-    .guides-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
-    .guide-card { overflow: hidden; border: 1px solid color-mix(in srgb, var(--c-sand) 76%, transparent); border-radius: var(--radius-lg); color: var(--c-anthracite); background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease; }
-    .guide-card-main { display: block; color: inherit; text-decoration: none; }
-    .guide-card-image { position: relative; overflow: hidden; aspect-ratio: 16 / 10; background: var(--c-sand); }
+    .guides-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin-top: var(--space-3); align-items: stretch; }
+    .guide-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid color-mix(in srgb, var(--c-sand) 76%, transparent); border-radius: var(--radius-lg); color: var(--c-anthracite); background: var(--c-ivory); box-shadow: var(--shadow-soft); transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease; }
+    .guide-card-main { flex: 1 1 auto; display: flex; flex-direction: column; color: inherit; text-decoration: none; }
+    .guide-card-image { flex: 0 0 auto; position: relative; overflow: hidden; aspect-ratio: 16 / 10; background: var(--c-sand); }
     .guide-card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 750ms cubic-bezier(.2,.7,.2,1); }
     .guide-card-image span { position: absolute; left: 1.25rem; bottom: 1.25rem; padding: .5rem .75rem; border-radius: 999px; color: var(--c-ivory); background: rgba(10,36,49,.82); backdrop-filter: blur(8px); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
-    .guide-card-copy { padding: clamp(1.5rem, 3vw, 2.25rem); }
+    /* Flex column so the "read more" link sits at the same height across guide cards. */
+    .guide-card-copy { flex: 1 1 auto; display: flex; flex-direction: column; padding: clamp(1.5rem, 3vw, 2.25rem); }
     .guide-card h3 { margin: 0 0 .65rem; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.08; }
-    .guide-card-copy p { margin: 0 0 1.25rem; color: var(--c-anthracite); font-size: 0.92rem; line-height: 1.7; }
+    .guide-card-copy p { flex: 1 1 auto; margin: 0 0 1.25rem; color: var(--c-anthracite); font-size: 0.92rem; line-height: 1.7; }
     .guide-card-copy strong { color: var(--c-adria); font-size: .8rem; letter-spacing: .05em; }
     .guide-card-copy strong span { display: inline-block; margin-left: .3rem; transition: transform 180ms ease; }
     .guide-card-credit { margin: 0; padding: 0 2.25rem 1.1rem; color: var(--c-olive); font-size: .62rem; }
@@ -392,8 +394,7 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
       .villa-grid, .compare-grid, .guides-grid { grid-template-columns: minmax(0, 1fr); }
       .location-highlights { grid-template-columns: 1fr; }
       .distances { grid-template-columns: 1fr; }
-      .home-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(2, 190px); }
-      .home-gallery button:first-child, .home-gallery button:nth-child(2) { grid-column: auto; grid-row: auto; }
+      .home-gallery { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
       .hero { min-height: calc(100svh - 64px); align-items: flex-end; }
@@ -414,6 +415,29 @@ import { GuestReviewsComponent } from '../../shared/guest-reviews/guest-reviews.
       .distances li { gap: 1rem; align-items: baseline; }
       .distances strong { white-space: nowrap; }
     }
+    /* Phones: villa cards, the photo gallery and the guide cards each become
+       one horizontal, snap-scrolling row. */
+    @media (max-width: 640px) {
+      .villa-grid, .home-gallery, .guides-grid {
+        display: flex;
+        gap: .8rem;
+        margin: var(--space-3) -1.1rem -1rem;
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 1.1rem;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+      .villa-grid::-webkit-scrollbar,
+      .home-gallery::-webkit-scrollbar,
+      .guides-grid::-webkit-scrollbar { display: none; }
+      .home-gallery { align-items: start; }
+      .villa-grid > .villa-card { flex: 0 0 min(85vw, 330px); scroll-snap-align: start; }
+      .home-gallery > button { flex: 0 0 min(80vw, 300px); height: auto; aspect-ratio: 4 / 3; scroll-snap-align: start; }
+      .guides-grid > .guide-card { flex: 0 0 min(85vw, 340px); scroll-snap-align: start; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .hero-slide { display: none; animation: none; }
       .slide-one { display: block; opacity: 1; transform: none; }
@@ -429,26 +453,58 @@ export class HomeComponent implements OnInit {
   protected readonly villas = VILLAS;
   protected readonly distances = DISTANCES;
   protected readonly guides = GUIDE_ARTICLES;
-  protected readonly homeGalleryImages = [
-    '/assets/media/montemare/monte-mare-exterior-pool.webp',
-    '/assets/media/lumina/lumina-exterior-pool.webp',
-    '/assets/media/montemare/monte-mare-olive-garden.webp',
-    '/assets/media/lumina/lumina-dining-area.webp',
+  protected readonly homeGalleryImages: Array<{ src: string; alt: LocalizedText }> = [
+    {
+      src: '/assets/media/montemare/monte-mare-exterior-pool.webp',
+      alt: { de: 'Villa MonteMare mit privatem Pool und Sonnenterrasse', en: 'Villa MonteMare with a private pool and sun terrace', ru: 'Villa MonteMare с частным бассейном и солнечной террасой', es: 'Villa MonteMare con piscina privada y terraza solárium', sr: 'Villa MonteMare sa privatnim bazenom i terasom za sunčanje' },
+    },
+    {
+      src: '/assets/media/lumina/lumina-rooftop-sea-view.webp',
+      alt: { de: 'Dachterrasse der Villa Lumina mit Panoramablick auf die Adria', en: 'Rooftop terrace at Villa Lumina with panoramic Adriatic views', ru: 'Терраса на крыше Villa Lumina с панорамным видом на Адриатику', es: 'Azotea de Villa Lumina con vistas panorámicas al Adriático', sr: 'Krovna terasa vile Lumina sa panoramskim pogledom na Jadran' },
+    },
+    {
+      src: '/assets/media/montemare/monte-mare-olive-garden.webp',
+      alt: { de: 'Mediterraner Olivengarten der Villa MonteMare', en: 'Mediterranean olive garden at Villa MonteMare', ru: 'Средиземноморский оливковый сад Villa MonteMare', es: 'Jardín mediterráneo de olivos de Villa MonteMare', sr: 'Mediteranska bašta sa maslinama vile MonteMare' },
+    },
+    {
+      src: '/assets/media/lumina/lumina-exterior-pool.webp',
+      alt: { de: 'Villa Lumina mit privatem Pool vor der Bergkulisse', en: 'Villa Lumina with a private pool against the mountains', ru: 'Villa Lumina с частным бассейном на фоне гор', es: 'Villa Lumina con piscina privada frente a las montañas', sr: 'Villa Lumina sa privatnim bazenom ispred planina' },
+    },
+    {
+      src: '/assets/media/montemare/monte-mare-balcony-view.webp',
+      alt: { de: 'Balkon der Villa MonteMare mit Blick über Bucht und Berge', en: 'Balcony at Villa MonteMare overlooking the bay and mountains', ru: 'Балкон Villa MonteMare с видом на залив и горы', es: 'Balcón de Villa MonteMare con vistas a la bahía y las montañas', sr: 'Balkon vile MonteMare sa pogledom na zaliv i planine' },
+    },
+    {
+      src: '/assets/media/lumina/lumina-living-room.webp',
+      alt: { de: 'Heller, offener Wohnbereich der Villa Lumina', en: 'Bright open-plan living area at Villa Lumina', ru: 'Светлая гостиная открытой планировки в Villa Lumina', es: 'Luminoso salón de planta abierta de Villa Lumina', sr: 'Svetao dnevni boravak otvorenog plana u vili Lumina' },
+    },
+    {
+      src: '/assets/media/montemare/monte-mare-bedroom-lounge.webp',
+      alt: { de: 'Schlafzimmer mit Loungebereich in der Villa MonteMare', en: 'Bedroom with a lounge area at Villa MonteMare', ru: 'Спальня с зоной отдыха в Villa MonteMare', es: 'Dormitorio con zona de estar en Villa MonteMare', sr: 'Spavaća soba sa lounge prostorom u vili MonteMare' },
+    },
+    {
+      src: '/assets/media/lumina/lumina-dining-area.webp',
+      alt: { de: 'Essbereich der Villa Lumina mit großem Holztisch', en: 'Dining area at Villa Lumina with a large wooden table', ru: 'Обеденная зона Villa Lumina с большим деревянным столом', es: 'Comedor de Villa Lumina con una gran mesa de madera', sr: 'Trpezarija vile Lumina sa velikim drvenim stolom' },
+    },
+    {
+      src: '/assets/media/montemare/monte-mare-pool-garden.webp',
+      alt: { de: 'Pool und terrassierter Garten der Villa MonteMare', en: 'Pool and terraced garden at Villa MonteMare', ru: 'Бассейн и террасный сад Villa MonteMare', es: 'Piscina y jardín aterrazado de Villa MonteMare', sr: 'Bazen i terasasta bašta vile MonteMare' },
+    },
+    {
+      src: '/assets/media/lumina/lumina-balcony-sea-view.webp',
+      alt: { de: 'Balkon der Villa Lumina mit direktem Meerblick', en: 'Balcony at Villa Lumina with direct sea views', ru: 'Балкон Villa Lumina с прямым видом на море', es: 'Balcón de Villa Lumina con vistas directas al mar', sr: 'Balkon vile Lumina sa direktnim pogledom na more' },
+    },
   ];
-  protected readonly homeGalleryAlt = (path: string): string => path.includes('pool')
-    ? this.t.inline('Villa mit privatem Pool', 'Villa with private pool', 'Вилла с частным бассейном', 'Villa con piscina privada')
-    : path.includes('olive')
-      ? this.t.inline('Mediterraner Olivengarten der Villa MonteMare', 'Mediterranean olive garden at Villa MonteMare', 'Средиземноморский сад Villa MonteMare', 'Jardín mediterráneo de Villa MonteMare')
-    : path.includes('rooftop')
-      ? this.t.inline('Dachterrasse mit Meerblick', 'Rooftop terrace with sea view', 'Терраса на крыше с видом на море', 'Azotea con vistas al mar')
-      : path.includes('dining')
-        ? this.t.inline('Heller Essbereich der Villa Lumina mit großem Holztisch', 'Bright dining area at Villa Lumina with a large wooden table', 'Светлая обеденная зона Villa Lumina с большим деревянным столом', 'Luminoso comedor de Villa Lumina con una gran mesa de madera', 'Svetla trpezarija vile Lumina sa velikim drvenim stolom')
-      : path.includes('living')
-        ? this.t.inline('Heller Wohnbereich der Villa Lumina', 'Bright living room at Villa Lumina', 'Светлая гостиная Villa Lumina', 'Salón luminoso de Villa Lumina')
-        : this.t.inline('Schlafzimmer mit Meerblick', 'Bedroom with sea view', 'Спальня с видом на море', 'Dormitorio con vistas al mar');
+  protected homeGallerySrcs(): string[] {
+    return this.homeGalleryImages.map((image) => image.src);
+  }
+  protected readonly homeGalleryAlt = (src: string): string => {
+    const entry = this.homeGalleryImages.find((image) => image.src === src);
+    return entry ? this.t.t(entry.alt) : this.t.inline('Ansicht der Villen an der Budva Riviera', 'View of the villas on the Budva Riviera', 'Вид на виллы на Будванской ривьере', 'Vista de las villas en la Riviera de Budva', 'Pogled na vile na Budvanskoj rivijeri');
+  };
 
   ngOnInit(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'en';
     this.t.setLocale(locale);
 
     this.seo.setPage({

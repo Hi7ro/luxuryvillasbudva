@@ -166,11 +166,31 @@ interface GuestReview {
     @media (max-width: 640px) {
       .reviews-heading { grid-template-columns: 1fr; align-items: start; }
       .reviews-summary { padding: 1rem 0 0; border-top: 1px solid var(--c-sand); border-left: 0; }
-      .host-review-grid { grid-template-columns: 1fr; }
       .host-history summary { align-items: flex-start; }
       .summary-action { font-size: 0; }
       .review-topline { display: block; }
       .review-topline time { display: block; margin: .65rem 0 0 3.3rem; text-align: left; }
+
+      /* Phones: reviews become one horizontal, snap-scrolling row. */
+      .review-grid, .host-review-grid {
+        display: flex;
+        gap: .85rem;
+        margin: -1rem -1.1rem;
+        padding: 1rem 1.1rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 1.1rem;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+      }
+      .review-grid::-webkit-scrollbar,
+      .host-review-grid::-webkit-scrollbar { display: none; }
+      .review-card, .host-review-card {
+        flex: 0 0 min(82vw, 300px);
+        scroll-snap-align: start;
+      }
+      .host-review-grid { padding-bottom: 3rem; }
     }
   `],
 })
@@ -181,6 +201,17 @@ export class GuestReviewsComponent {
   private readonly translatedReviews = signal<ReadonlySet<string>>(new Set());
 
   protected readonly villaReviews: GuestReview[] = [
+     {
+      id: 'marc-2026', name: 'Marc Ulrich', location: 'Bergkamen, Germany', image: '/assets/media/people/marc-ulrich.jpg', rating: 5,
+      date: { de: 'Juli 2026', en: 'July 2026', ru: 'Июль 2026', es: 'Julio de 2026' },
+      text: 'We felt like at home from the first moment. The reception was incredibly warm, and communication with the hosts was always quick, friendly and absolutely straightforward. The house is exactly as described in the pictures, if not even more beautiful. The villa is equipped with state-of-the-art furnishings, is furnished to a high standard and leaves nothing to be desired. The view of the sea with the mountains in the background is simply fantastic and makes this place very special. The pool and the entire complex are also excellently maintained and invite you to relax. For us, this place had a very special energy. You arrive and immediately feel peace, freedom and relaxation. We not only fell in love with Montenegro, but also with this beautiful house. It was definitely one of the nicest vacation homes we\'ve stayed in so far. We will be happy to come back and can fully recommend the villa.',
+    },
+      {
+      id: 'addy-2026', name: 'Addy W.', location: 'Austria', image: '/assets/media/people/addy.jpeg', rating: 5,
+      date: { de: 'Juni 2026', en: 'June 2026', ru: 'Июнь 2026', es: 'Junio de 2026', sr: 'Jun 2026.' },
+      originalLanguage: 'de',
+      text: 'Durch Bekannte bin ich auf diese Villa aufmerksam geworden – der Aufenthalt hat meine Erwartungen mehr als übertroffen. Die Kommunikation mit Michael war von Anfang an unkompliziert, freundlich und schnell. Da ich ortsunabhängig arbeite, habe ich direkt zwei Wochen gebucht. Vor Ort war alles noch schöner als auf den Fotos: mit viel Liebe zum Detail gestaltet, außerordentlich sauber und hochwertig ausgestattet, stilvoll und zugleich gemütlich – ideal zum Abschalten wie zum konzentrierten Arbeiten. Besonders angenehm fand ich die Ruhe und die Privatsphäre. Ich kann die Villa uneingeschränkt weiterempfehlen und freue mich schon auf den nächsten Aufenthalt. Vielen Dank an Michael für die großartige Betreuung!',
+    },
     {
       id: 'arnon-2026', name: 'Arnon', location: 'Israel', image: '/assets/media/people/arnon.jpeg', rating: 5,
       date: { de: 'August 2026', en: 'August 2026', ru: 'Август 2026', es: 'Agosto de 2026' },
@@ -190,18 +221,7 @@ export class GuestReviewsComponent {
       id: 'rali-2026', name: 'Rali', location: 'Sofia, Bulgaria', image: '/assets/media/people/rali.jpg', rating: 3,
       date: { de: 'August 2026', en: 'August 2026', ru: 'Август 2026', es: 'Agosto de 2026' },
       text: "The house is new, lovely, very clean, and equipped with everything necessary. The location is good. What we didn't like was that there is construction of new houses in front, blocking the view, but the main issue for us was the temperature inside. It was terribly hot; when we arrived, the air conditioners were only just being turned on and set up. It was awful, after a full day of traveling, to arrive at a villa that hadn't been pre-cooled—the indoor temperature was 40 degrees. We also had trouble with the AC settings, and by the time someone came to adjust them, we had spent three sleepless nights due to the heat. Overall, the house just wasn't cool enough.",
-    },
-    {
-      id: 'marc-2026', name: 'Marc Ulrich', location: 'Bergkamen, Germany', image: '/assets/media/people/marc-ulrich.jpg', rating: 5,
-      date: { de: 'Juli 2026', en: 'July 2026', ru: 'Июль 2026', es: 'Julio de 2026' },
-      text: 'We felt like at home from the first moment. The reception was incredibly warm, and communication with the hosts was always quick, friendly and absolutely straightforward. The house is exactly as described in the pictures, if not even more beautiful. The villa is equipped with state-of-the-art furnishings, is furnished to a high standard and leaves nothing to be desired. The view of the sea with the mountains in the background is simply fantastic and makes this place very special. The pool and the entire complex are also excellently maintained and invite you to relax. For us, this place had a very special energy. You arrive and immediately feel peace, freedom and relaxation. We not only fell in love with Montenegro, but also with this beautiful house. It was definitely one of the nicest vacation homes we\'ve stayed in so far. We will be happy to come back and can fully recommend the villa.',
-    },
-    {
-      id: 'addy-2026', name: 'Addy', location: 'Austria', image: '/assets/media/people/addy.jpeg', rating: 5,
-      date: { de: 'Juni 2026', en: 'June 2026', ru: 'Июнь 2026', es: 'Junio de 2026', sr: 'Jun 2026.' },
-      originalLanguage: 'de',
-      text: 'Durch Bekannte bin ich auf diese wunderschöne Villa aufmerksam geworden – und ich kann im Nachhinein wirklich sagen, dass der Aufenthalt meine Erwartungen mehr als übertroffen hat. Schon vor meiner Anreise verlief die Kommunikation mit Michael absolut problemlos. Er war jederzeit freundlich, hilfsbereit und zuverlässig. Wenn ich eine Frage oder ein Anliegen hatte, bekam ich innerhalb kürzester Zeit eine Antwort. Dadurch habe ich mich von Anfang an sehr gut aufgehoben gefühlt. Da ich ortsunabhängig arbeiten kann, habe ich die Villa direkt für zwei Wochen gebucht. Bereits auf den Fotos hat mich der moderne und geschmackvolle Stil angesprochen. Als ich dann vor Ort ankam, war ich dennoch überrascht, wie viel schöner und beeindruckender alles in Wirklichkeit wirkt. Die gesamte Villa ist mit sehr viel Liebe zum Detail gestaltet und schafft eine besondere Atmosphäre, in der man sich sofort wohlfühlt. Alles war außerordentlich sauber, großzügig geschnitten und hochwertig ausgestattet. Die Einrichtung wirkt stilvoll und zugleich gemütlich, sodass sich die Villa sowohl zum entspannten Abschalten als auch zum konzentrierten Arbeiten bestens eignet. Auch bei einem längeren Aufenthalt fehlt es einem wirklich an nichts. Besonders angenehm fand ich die Ruhe und das Gefühl von Privatsphäre – genau das Richtige, um den Alltag für eine Weile hinter sich zu lassen. Ich habe meine zwei Wochen dort sehr genossen und wäre am liebsten noch länger geblieben. Für mich war der Aufenthalt eine rundum positive Erfahrung, die ich mit gutem Gewissen weiterempfehlen kann. Vielen Dank an Michael für die großartige Betreuung und die schöne Zeit. Ich freue mich schon jetzt auf meinen nächsten Aufenthalt!',
-    },
+    }
   ];
 
   protected readonly hostReviews: GuestReview[] = [

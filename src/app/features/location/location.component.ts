@@ -401,7 +401,7 @@ export class LocationComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'en';
     this.t.setLocale(locale);
     if (isPlatformBrowser(this.platformId)) {
       this.mapConsent.set(localStorage.getItem(this.mapConsentStorageKey) === 'granted');

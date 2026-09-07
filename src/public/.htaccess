@@ -11,9 +11,9 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Angular client-side routes such as /de and /sr/villas/villa-lumina.
-# Angular's SSR-capable browser build names the static entry file index.csr.html.
-RewriteRule ^ index.csr.html [L]
+# SPA fallback for Angular routes (/en, /sr/villas/villa-lumina, …).
+# The build ships both index.html and index.csr.html, so this always resolves.
+RewriteRule ^ index.html [L]
 
 # --- Security response headers -------------------------------------------------
 # The production deployment is static (no Node/Express), so the headers set in
@@ -45,7 +45,7 @@ RewriteRule ^ index.csr.html [L]
     Header append Cache-Control "public, immutable"
   </FilesMatch>
   # The SPA shell and generated feeds must stay fresh.
-  <FilesMatch "^(?:index\.csr\.html|sitemap\.xml|robots\.txt)$">
+  <FilesMatch "^(?:index\.html|index\.csr\.html|sitemap\.xml|robots\.txt)$">
     ExpiresDefault "access plus 0 seconds"
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>

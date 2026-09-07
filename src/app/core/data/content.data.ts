@@ -1,7 +1,7 @@
 import { DistanceItem, GuideArticle, Villa, VillaDetailSection } from '../models/villa.model';
 import { MINIMUM_NIGHTLY_RATE_EUR } from '../config/pricing.config';
 
-const villaDetailSections = (villaName: string): VillaDetailSection[] => [
+const villaDetailSections = (villaName: string, opts: { rooftop: boolean; gardenLevels: number }): VillaDetailSection[] => [
   {
     title: {
       de: 'Willkommen an der Adria',
@@ -60,28 +60,52 @@ const villaDetailSections = (villaName: string): VillaDetailSection[] => [
     ],
   },
   {
-    title: {
-      de: 'Pool, Garten und Panorama',
-      en: 'Pool, garden and panorama',
-      ru: 'Бассейн, сад и панорама',
-      es: 'Piscina, jardín y panorama',
-      sr: 'Bazen, bašta i panorama',
-    },
+    title: opts.rooftop
+      ? {
+          de: 'Pool, Garten und Panorama',
+          en: 'Pool, garden and panorama',
+          ru: 'Бассейн, сад и панорама',
+          es: 'Piscina, jardín y panorama',
+          sr: 'Bazen, bašta i panorama',
+        }
+      : {
+          de: 'Pool, Garten und Privatsphäre',
+          en: 'Pool, garden and privacy',
+          ru: 'Бассейн, сад и приватность',
+          es: 'Piscina, jardín y privacidad',
+          sr: 'Bazen, bašta i privatnost',
+        },
     paragraphs: [
-      {
-        de: 'Der Außenbereich umfasst einen geschmackvoll angelegten Garten auf drei Ebenen mit alten Olivenbäumen sowie einen privaten Swimmingpool mit großzügiger Sonnenterrasse.',
-        en: 'The outdoor area comprises a beautifully landscaped, three-level garden with mature olive trees and a private swimming pool with a generous sun terrace.',
-        ru: 'На территории расположен красиво оформленный трёхуровневый сад со старыми оливковыми деревьями и частный бассейн с просторной солнечной террасой.',
-        es: 'El exterior ofrece un cuidado jardín en tres niveles con olivos centenarios y una piscina privada con una amplia terraza-solárium.',
-        sr: 'Spoljni prostor obuhvata lepo uređenu baštu na tri nivoa sa zrelim stablima maslina i privatnim bazenom sa velikodušnom terasom za sunčanje.',
-      },
-      {
-        de: 'Ein besonderes Highlight ist die Dachterrasse mit spektakulärem Panoramablick auf das Meer und die umliegende Berglandschaft.',
-        en: 'A particular highlight is the rooftop terrace with spectacular panoramic views of the sea and surrounding mountains.',
-        ru: 'Особая изюминка виллы - терраса на крыше с впечатляющим панорамным видом на море и окружающие горы.',
-        es: 'Uno de sus grandes atractivos es la azotea, con espectaculares vistas panorámicas al mar y a las montañas que la rodean.',
-        sr: 'Poseban vrhunac je krovna terasa sa spektakularnim panoramskim pogledom na more i okolne planine.',
-      },
+      opts.gardenLevels === 2
+        ? {
+            de: 'Der Außenbereich umfasst einen geschmackvoll angelegten Garten auf zwei Ebenen mit alten Olivenbäumen sowie einen privaten Swimmingpool mit großzügiger Sonnenterrasse.',
+            en: 'The outdoor area comprises a beautifully landscaped, two-level garden with mature olive trees and a private swimming pool with a generous sun terrace.',
+            ru: 'На территории расположен красиво оформленный двухуровневый сад со старыми оливковыми деревьями и частный бассейн с просторной солнечной террасой.',
+            es: 'El exterior ofrece un cuidado jardín en dos niveles con olivos centenarios y una piscina privada con una amplia terraza-solárium.',
+            sr: 'Spoljni prostor obuhvata lepo uređenu baštu na dva nivoa sa zrelim stablima maslina i privatnim bazenom sa velikodušnom terasom za sunčanje.',
+          }
+        : {
+            de: 'Der Außenbereich umfasst einen geschmackvoll angelegten Garten auf drei Ebenen mit alten Olivenbäumen sowie einen privaten Swimmingpool mit großzügiger Sonnenterrasse.',
+            en: 'The outdoor area comprises a beautifully landscaped, three-level garden with mature olive trees and a private swimming pool with a generous sun terrace.',
+            ru: 'На территории расположен красиво оформленный трёхуровневый сад со старыми оливковыми деревьями и частный бассейн с просторной солнечной террасой.',
+            es: 'El exterior ofrece un cuidado jardín en tres niveles con olivos centenarios y una piscina privada con una amplia terraza-solárium.',
+            sr: 'Spoljni prostor obuhvata lepo uređenu baštu na tri nivoa sa zrelim stablima maslina i privatnim bazenom sa velikodušnom terasom za sunčanje.',
+          },
+      opts.rooftop
+        ? {
+            de: 'Ein besonderes Highlight ist die Dachterrasse mit spektakulärem Panoramablick auf das Meer und die umliegende Berglandschaft.',
+            en: 'A particular highlight is the rooftop terrace with spectacular panoramic views of the sea and surrounding mountains.',
+            ru: 'Особая изюминка виллы — терраса на крыше с впечатляющим панорамным видом на море и окружающие горы.',
+            es: 'Uno de sus grandes atractivos es la azotea, con espectaculares vistas panorámicas al mar y a las montañas que la rodean.',
+            sr: 'Poseban vrhunac je krovna terasa sa spektakularnim panoramskim pogledom na more i okolne planine.',
+          }
+        : {
+            de: 'Das eigentliche Highlight ist die Privatsphäre: Die zwei Gartenebenen mit alten Olivenbäumen und dichtem Grün schirmen die Villa ab – ideal für Familien und längere Aufenthalte. Für Langzeitaufenthalte steht Villa MonteMare zudem als Monatsmiete mit zusätzlichen Services zur Verfügung.',
+            en: 'The real highlight is the privacy: the two garden levels with mature olive trees and dense planting screen the villa – ideal for families and longer stays. For extended stays, Villa MonteMare is also available on a monthly basis with additional services.',
+            ru: 'Главное преимущество — приватность: два уровня сада со старыми оливковыми деревьями и густой зеленью укрывают виллу от посторонних глаз, что идеально для семей и длительного отдыха. Для длительного проживания Villa MonteMare также доступна на условиях помесячной аренды с дополнительными услугами.',
+            es: 'El verdadero atractivo es la privacidad: los dos niveles de jardín con olivos centenarios y vegetación densa resguardan la villa, ideal para familias y estancias largas. Para estancias prolongadas, Villa MonteMare también está disponible en régimen mensual con servicios adicionales.',
+            sr: 'Pravi vrhunac je privatnost: dva nivoa bašte sa starim maslinama i gustim zelenilom zaklanjaju vilu – idealno za porodice i duže boravke. Za duži boravak, Villa MonteMare je dostupna i na mesečnom nivou uz dodatne usluge.',
+          },
     ],
   },
 ];
@@ -130,10 +154,11 @@ export const VILLAS: Villa[] = [
       es: 'Un refugio privado sobre la costa adriática de Montenegro, con diseño moderno, jardín mediterráneo, piscina privada y atardeceres inolvidables.',
     },
     intro: {
-      de: 'In Reževići, auf einer ruhigen Anhöhe rund 90 Meter über dem Meer, liegt Villa MonteMare zwischen alten Olivenbäumen und drei terrassierten Gartenebenen. Bis zu sechs Gäste bewohnen die Villa exklusiv - mit Panoramablick auf Bucht und Berge.',
-      en: 'In Reževići, on a quiet hillside roughly 90 metres above the sea, Villa MonteMare sits among old olive trees across three terraced garden levels. Up to six guests have the entire villa to themselves, with panoramic views over the bay and mountains.',
-      ru: 'Villa MonteMare расположена в Режевичи, на тихом склоне примерно в 90 метрах над морем, среди старых оливковых деревьев и трёх уровней террасного сада. Вилла полностью предоставляется группе до шести гостей и открывает панорамный вид на залив и горы.',
-      es: 'Villa MonteMare se encuentra en Reževići, en una tranquila ladera a unos 90 metros sobre el mar, entre olivos centenarios y tres niveles de jardín. Hasta seis huéspedes disfrutan de toda la villa en exclusiva, con vistas panorámicas a la bahía y las montañas.',
+      de: 'In Reževići, auf einer ruhigen Anhöhe rund 90 Meter über dem Meer, liegt Villa MonteMare zwischen alten Olivenbäumen und zwei terrassierten Gartenebenen. Bis zu sechs Gäste bewohnen die Villa exklusiv - mit Panoramablick auf Bucht und Berge.',
+      en: 'In Reževići, on a quiet hillside roughly 90 metres above the sea, Villa MonteMare sits among old olive trees across two terraced garden levels. Up to six guests have the entire villa to themselves, with panoramic views over the bay and mountains.',
+      ru: 'Villa MonteMare расположена в Режевичи, на тихом склоне примерно в 90 метрах над морем, среди старых оливковых деревьев и двух уровней террасного сада. Вилла полностью предоставляется группе до шести гостей и открывает панорамный вид на залив и горы.',
+      es: 'Villa MonteMare se encuentra en Reževići, en una tranquila ladera a unos 90 metros sobre el mar, entre olivos centenarios y dos niveles de jardín. Hasta seis huéspedes disfrutan de toda la villa en exclusiva, con vistas panorámicas a la bahía y las montañas.',
+      sr: 'Villa MonteMare se nalazi u Reževićima, na mirnoj padini oko 90 metara iznad mora, među starim maslinama i na dva terasasta nivoa bašte. Do šest gostiju koristi vilu isključivo za sebe, uz panoramski pogled na zaliv i planine.',
     },
     description: [
       {
@@ -149,7 +174,7 @@ export const VILLAS: Villa[] = [
         es: 'Una zona de trabajo separada con escritorio y Wi‑Fi permite trabajar cómodamente durante la estancia. Un lavadero con lavadora y dos plazas de aparcamiento privadas completan el equipamiento.',
       },
     ],
-    detailSections: villaDetailSections('Villa MonteMare'),
+    detailSections: villaDetailSections('Villa MonteMare', { rooftop: false, gardenLevels: 2 }),
     guests: 6,
     bedrooms: 3,
     bathrooms: 3,
@@ -346,7 +371,7 @@ export const VILLAS: Villa[] = [
         es: 'La amplia terraza de la piscina y la azotea ofrecen varios espacios de descanso al aire libre. Un televisor HDTV de 65 pulgadas, un lavadero con lavadora y dos plazas de aparcamiento privadas completan la oferta.',
       },
     ],
-    detailSections: villaDetailSections('Villa Lumina'),
+    detailSections: villaDetailSections('Villa Lumina', { rooftop: true, gardenLevels: 3 }),
     guests: 6,
     bedrooms: 3,
     bathrooms: 3,

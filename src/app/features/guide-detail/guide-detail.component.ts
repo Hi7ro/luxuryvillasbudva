@@ -118,7 +118,7 @@ export class GuideDetailComponent implements OnInit {
   }
 
   private loadGuide(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'en';
     this.t.setLocale(locale);
     const slug = this.route.snapshot.paramMap.get('slug');
     this.guide = GUIDE_ARTICLES.find((g) => g.slug === slug);

@@ -80,7 +80,7 @@ const UI_STRINGS: Record<string, LocalizedText> = {
 
 @Injectable({ providedIn: 'root' })
 export class TranslationService {
-  private readonly localeSignal = signal<Locale>('de');
+  private readonly localeSignal = signal<Locale>('en');
   readonly locale = this.localeSignal.asReadonly();
   readonly isGerman = computed(() => this.localeSignal() === 'de');
 

@@ -36,7 +36,7 @@ export class NotFoundComponent implements OnInit {
     const urlLocale = this.router.url.split('?')[0].split('/').filter(Boolean)[0];
     const supported: Locale[] = ['de', 'en', 'ru', 'es', 'sr'];
     const locale: Locale = routeLocale
-      ?? (supported.includes(urlLocale as Locale) ? (urlLocale as Locale) : 'de');
+      ?? (supported.includes(urlLocale as Locale) ? (urlLocale as Locale) : 'en');
     this.t.setLocale(locale);
     this.seo.setPage({
       locale,

@@ -95,7 +95,7 @@ export class LegalComponent implements OnInit {
   protected page: 'imprint' | 'privacy' = 'imprint';
 
   ngOnInit(): void {
-    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'de';
+    const locale = (this.route.snapshot.data['locale'] as Locale) ?? 'en';
     this.page = (this.route.snapshot.data['page'] as 'imprint' | 'privacy') ?? 'imprint';
     this.t.setLocale(locale);
     const path = this.page === 'imprint' ? 'impressum' : 'datenschutz';

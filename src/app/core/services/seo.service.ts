@@ -75,7 +75,7 @@ export class SeoService {
     this.setHreflang('ru', paths.ru);
     this.setHreflang('es', paths.es);
     this.setHreflang('sr', paths.sr);
-    this.setHreflang('x-default', paths.de);
+    this.setHreflang('x-default', paths.en);
 
     this.document.documentElement.lang = data.locale;
   }
@@ -107,7 +107,7 @@ export class SeoService {
       link.setAttribute('hreflang', locale);
       this.document.head.appendChild(link);
     }
-    const localePrefix = locale === 'x-default' ? 'de' : locale;
+    const localePrefix = locale === 'x-default' ? 'en' : locale;
     link.setAttribute('href', this.absoluteUrl(localePrefix as Locale, path));
   }
 

@@ -157,7 +157,7 @@ function buildSitemap(origin: string): string {
   const urls = groups.flatMap((group) => {
     const alternates = locales
       .map((locale) => `    <xhtml:link rel="alternate" hreflang="${locale}" href="${escapeXml(origin + group[locale])}" />`)
-      .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(origin + group.de)}" />`)
+      .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(origin + group.en)}" />`)
       .join('\n');
     return locales.map((locale) => [
       '  <url>',

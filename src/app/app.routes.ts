@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'de', pathMatch: 'full' },
+  { path: '', redirectTo: 'en', pathMatch: 'full' },
 
   ...(['de', 'en', 'ru', 'es', 'sr'] as const).flatMap((locale) => [
     {

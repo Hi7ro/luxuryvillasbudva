@@ -53,7 +53,7 @@ export class AppComponent {
     if (!this.initialNavigationHandled) {
       this.initialNavigationHandled = true;
       if (this.resetHomepageAfterReload && this.isHomepage(urlTree)) {
-        const locale = urlTree.root.children['primary']?.segments[0]?.path ?? 'de';
+        const locale = urlTree.root.children['primary']?.segments[0]?.path ?? 'en';
         if (urlTree.fragment) {
           void this.router.navigateByUrl(`/${locale}`, { replaceUrl: true }).then(() => this.scrollToTop());
         } else {
